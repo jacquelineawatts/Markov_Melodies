@@ -3,8 +3,8 @@ from flask_debugtoolbar import DebugToolbarExtension
 from jinja2 import StrictUndefined
 # from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
-from model import connect_to_db, db
-from model import User, Melody, Note, MelodyNote, Markov, Outcome, Connection, Like
+# from model import connect_to_db, db
+# from model import User, Melody, Note, MelodyNote, Markov, Outcome, Connection, Like
 
 
 app = Flask(__name__)
@@ -16,12 +16,19 @@ app.jinja_env.undefined = StrictUndefined
 def index():
     """Shows homepage. """
 
-    return render_template('index.html')
+    notes = ['A-flat', 'A', 'A#', 'B-flat', 'B', 'C', 'C#', 'D-flat', 'D', 'D#', 'E-flat', 'E', 'F', 'F#', 'G-flat', 'G', 'G#']
+
+    return render_template('index.html', notes=notes)
 
 
 @app.route('/new_melody', methods=['POST'])
 def generate_new_melody():
     """Handles form input for generating a new melody."""
+
+    note1 = request.form.get('note1')
+    note2 = request.form.get('note2')
+    mode = request.form.get('mode')
+
 
     return redirect('/results')
 
@@ -76,7 +83,7 @@ def processes_logout():
 if __name__ == "__main__":
 
     app.debug = True
-    connect_to_db(app)
+    # connect_to_db(app)
     DebugToolbarExtension(app)
 
-    app.run(port=5000)
+    app.run(host='0.0.0.0')

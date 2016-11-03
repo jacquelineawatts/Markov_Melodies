@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %} Homepage {% endblock %}
+
+{% block body %}
+<h3>Welcome to Markov's Melodies</h3>
+<h5>How it works: </h5>
+<p>Markov Melodies is a music composition app which asks users to provide a small amount of seed information (a few starter notes, preference for major vs. minor, length) to allow the app to generate a brand new melody for them. Users can sign up and log in to a profile to save and share their melodies, or they may choose to use the app as a guest user.</p>
+
+<form action='/new_melody' method='POST'>
+
+    <label for="note1">First Note: </label>
+        <select name="note1">
+            {% for note in notes %}
+                <option value="{{ note }}">{{ note }}</option>
+            {% endfor %}
+        </select><br>
+
+    <label for="note2">Second Note: </label>
+        <select name="note2">
+            {% for note in notes %}
+                <option value="{{ note }}">{{ note }}</option>
+            {% endfor %}
+        </select><br>
+    
+    <label for="length">Length of Output Melody: </label>
+    <input type="number" name="length"><br>
+    <p>Select if you'd like your melody to be major or minor: </p>
+        <input type="radio" name="mode" value="major"><label for="major">Major</label>
+        <input type="radio" name="mode" value="minor"><label for="minor">Minor</label>
+        <input type="radio" name="mode" value="None"><label for="none">No Preference</label><br>
+
+    <input type="submit" value="Submit">
+
+</form> 
+{% endblock %}

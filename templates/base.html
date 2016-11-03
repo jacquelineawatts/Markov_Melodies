@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+<head>
+    <title>{% block title %} ENTER CHILD TEMPLATE BLOCK TITLE HERE {% endblock %}</title>
+</head>
+<body>
+    
+  <!-- FLASH MESSAGES -->
+  {% with messages = get_flashed_messages() %}
+      {% for message in messages %}
+          <div class="flash-msg">{{ message }}</div>
+      {% endfor %}
+  {% endwith %}
+
+  <!-- CHILD TEMPLATE BODY CONTENT  -->
+  {% block body %} ENTER CHILD TEMPLATE BLOCK CONTENT HERE {% endblock %}
+</body>
+</html>
