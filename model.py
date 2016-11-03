@@ -11,17 +11,17 @@ class User(db.Model):
     user_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     first_name = db.Column(db.String(30), nullable=False)
     last_name = db.Column(db.String(30), nullable=False)
-    email = db.Column(db.String(256), nullable=False)
-    password = db.Column(db.String(30), nullable=False)
+    email = db.Column(db.String(64), nullable=False)
+    password = db.Column(db.String(64), nullable=False)
     profile_img = db.Column(db.String(256))
 
     followers = db.relationship("User",
                             secondary="connections",
-                            foreign_keys=[follower_user_id])
+                            foreign_keys=['follower_user_id'])
 
     following = db.relationship("User",
                             secondary="connections",
-                            foreign_keys=[following_user_id])
+                            foreign_keys=['following_user_id'])
 
     def __repr__(self):
         return "<User ID: {}; User: {} {}; Email: {}>".format(self.user_id,
@@ -40,7 +40,7 @@ class Melody(db.Model):
     title = db.Column(db.String(30))
     is_major = db.Column(db.Boolean)
     key = db.Column(db.String(10))
-    time_signature = db.Column(db.Real)
+    time_signature = db.Column(db.Float)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
 
     user = db.relationship('User', backref='melodies')
@@ -102,7 +102,7 @@ class Markov(db.Model):
     second_note_id = db.Column(db.Integer, db.ForeignKey('notes.note_id'))
     key = db.Column(db.String(10))
 
-    first_note = db.relatoinship('Note', foreign_keys=[first_note_id])
+    first_note = db.relationship('Note', foreign_keys=[first_note_id])
     second_note = db.relationship('Note', foreign_keys=[second_note_id])
 
     def __repr__(self):
@@ -118,7 +118,7 @@ class Outcome(db.Model):
     __tablename__ = "outcomes"
 
     outcome_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    markov_id = db.Column(db.Integer, db.ForeignKey('markov.markov_id'))
+    markov_id = db.Column(db.Integer, db.ForeignKey('markovs.markov_id'))
     note_id = db.Column(db.Integer, db.ForeignKey('notes.note_id'))
     weight = db.Column(db.Integer)
 
@@ -203,3 +203,5 @@ if __name__ == "__main__":
 
     connect_to_db(app)
     print "Connected to DB."
+
+    db.create_all()
