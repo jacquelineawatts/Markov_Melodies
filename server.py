@@ -5,7 +5,7 @@ from jinja2 import StrictUndefined
 
 # from model import connect_to_db, db
 # from model import User, Melody, Note, MelodyNote, Markov, Outcome, Connection, Like
-
+import melody_generator
 
 app = Flask(__name__)
 app.secret_key = "%ri*.\xab\x12\x81\x9b\x14\x1b\xd3\x86\xcaK\x8b\x87\t\x8c\xaf\x9d\x14\x87\x8a"
@@ -16,28 +16,36 @@ app.jinja_env.undefined = StrictUndefined
 def index():
     """Shows homepage. """
 
-    notes = ['A-flat', 'A', 'A#', 'B-flat', 'B', 'C', 'C#', 'D-flat', 'D', 'D#', 'E-flat', 'E', 'F', 'F#', 'G-flat', 'G', 'G#']
+    notes = ['A-4', 'A4', 'A#4', 'B-4', 'B4', 'C4', 'C#4', 'D-4', 'D4', 'D#4',
+             'E-4', 'E4', 'F4', 'F#4', 'G-4', 'G4', 'G#4']
 
     return render_template('index.html', notes=notes)
 
 
-@app.route('/new_melody', methods=['POST'])
-def generate_new_melody():
-    """Handles form input for generating a new melody."""
-
-    note1 = request.form.get('note1')
-    note2 = request.form.get('note2')
-    mode = request.form.get('mode')
-
+@app.route('/add_melody', methods=['POST'])
+def adds_melody():
+    """Adds a new melody to db."""
 
     return redirect('/results')
 
 
-@app.route('/results')
+@app.route('/results', methods=['POST'])
 def show_results():
     """Shows results of a generated melody."""
 
-    return render_template('results.html')
+    note1 = request.form.get('note1').encode('latin-1')
+    note2 = request.form.get('note2').encode('latin-1')
+    input_notes = (note1, note2)
+
+    # Need to put some js form validation on frontend for length input,
+    # otherwise comes in as None and throws app into infinite loop...
+    length = int(request.form.get('length'))
+    mode = request.form.get('mode')
+
+    generated_melody = melody_generator.generate_melody(length, input_notes)
+    melody_text = melody_generator.show_stream(generated_melody)
+
+    return render_template('results.html', melody=melody_text)
 
 
 @app.route('/profile/<user_id>')

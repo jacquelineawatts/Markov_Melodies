@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %} Results {% endblock %}
+
+{% block body %}
+
+<h3>Resulting Melody: </h3>
+{% for note in melody %}
+<p>{{ note }}</p>
+{% endfor %}
+
+{% endblock %}

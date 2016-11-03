@@ -42,7 +42,7 @@ def make_chains(chains, melody):
 # ------------------------------EXECUTABLE CODE -------------------------------
 
 # Opens + reads txt file containing all filenames of sample MIDI files.
-filenames = open('sample_files.txt').read().split('\n')
+filenames = open('test_files.txt').read().split('\n')
 
 # Saves all melodies into a list of lists (each list being its own melody)
 # (Eventually link this up to the File_converter script, so don't need to store on harddrive.)
