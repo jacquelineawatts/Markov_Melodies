@@ -1,11 +1,10 @@
 from flask import Flask, jsonify, render_template, redirect, request, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
 from jinja2 import StrictUndefined
-# from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
-
-# from model import connect_to_db, db
-# from model import User, Melody, Note, MelodyNote, Markov, Outcome, Connection, Like
-import melody_generator
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
+from model import connect_to_db
+from model import User, Melody, Note, MelodyNote, Markov, Outcome, Connection, Like
+# import melody_generator
 
 app = Flask(__name__)
 app.secret_key = "%ri*.\xab\x12\x81\x9b\x14\x1b\xd3\x86\xcaK\x8b\x87\t\x8c\xaf\x9d\x14\x87\x8a"
@@ -41,6 +40,7 @@ def show_results():
     # otherwise comes in as None and throws app into infinite loop...
     length = int(request.form.get('length'))
     mode = request.form.get('mode')
+    genres = request.form.get('genres')
 
     generated_melody = melody_generator.generate_melody(length, input_notes)
     melody_text = melody_generator.show_stream(generated_melody)
@@ -91,7 +91,7 @@ def processes_logout():
 if __name__ == "__main__":
 
     app.debug = True
-    # connect_to_db(app)
+    connect_to_db(app)
     DebugToolbarExtension(app)
 
     app.run(host='0.0.0.0')
