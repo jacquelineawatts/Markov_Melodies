@@ -1,4 +1,4 @@
-from flask_sqlalchemy import SQLAlchemy
+from flask.ext.sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
@@ -15,13 +15,12 @@ class User(db.Model):
     password = db.Column(db.String(64), nullable=False)
     profile_img = db.Column(db.String(256))
 
-    followers = db.relationship("User",
-                                secondary="connections",
-                                foreign_keys=['follower_user_id'])
-
-    following = db.relationship("User",
-                                secondary="connections",
-                                foreign_keys=['following_user_id'])
+    following = db.relationship('User',
+                                secondary='connections',
+                                primaryjoin='Connection.follower_user_id == User.user_id',
+                                secondaryjoin='Connection.following_user_id == User.user_id',
+                                backref=db.backref('followers'),
+                                )
 
     def __repr__(self):
         return "<User ID: {}; User: {} {}; Email: {}>".format(self.user_id,
@@ -63,15 +62,15 @@ class Note(db.Model):
     __tablename__ = "notes"
 
     note_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    pitch = db.Column(db.String(2))
+    pitch = db.Column(db.String(3))
     octave = db.Column(db.Integer)
     duration = db.Column(db.Float)
 
     def __repr__(self):
-        return "<Note ID: {}, Note: {}{}".format(self.note_id,
-                                                 self.pitch,
-                                                 self.octave,
-                                                 )
+        return "<Note ID: {}, Note: {}{}>".format(self.note_id,
+                                                  self.pitch,
+                                                  self.octave,
+                                                  )
 
 
 class MelodyNote(db.Model):
@@ -90,8 +89,8 @@ class MelodyNote(db.Model):
 
     def __repr__(self):
         return "<MelodyNote ID: {}, Melody: {}, Note: {}, Sequence: {} >".format(self.melodynote_id,
-                                                                                 self.melody_id,
-                                                                                 self.note_id,
+                                                                                 self.melody,
+                                                                                 self.note,
                                                                                  self.sequency,
                                                                                  )
 
@@ -112,8 +111,8 @@ class Markov(db.Model):
 
     def __repr__(self):
         return "<Markov ID: {}, Bi-gram: {}, {}>".format(self.markov_id,
-                                                         self.first_note_id.first_note,
-                                                         self.second_note_id.second_note,
+                                                         self.first_note,
+                                                         self.second_note,
                                                          )
 
 
@@ -132,8 +131,8 @@ class Outcome(db.Model):
 
     def __repr__(self):
         return "<Outcome ID: {}, Markov: {}, Note: {}, Weight: {}>".format(self.outcome_id,
-                                                                           self.markov_id,
-                                                                           self.note_id,
+                                                                           self.markov,
+                                                                           self.note,
                                                                            self.weight,
                                                                            )
 
@@ -177,8 +176,8 @@ class Connection(db.Model):
     follower_user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     following_user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
 
-    follower = db.relationship("User", foreign_keys=[follower_user_id])
-    following = db.relationship("User", foreign_keys=[following_user_id])
+    # follower = db.relationship("User", foreign_keys=[follower_user_id])
+    # following = db.relationship("User", foreign_keys=[following_user_id])
 
     def __repr__(self):
         return "<Connection ID: {}, Follower: {}, Following: {}>".format(self.connection_id,
@@ -201,40 +200,26 @@ class Like(db.Model):
 
     def __repr__(self):
         return "<Like ID: {}, User: {}, Melody: {}>".format(self.like_id,
-                                                            self.user_id,
-                                                            self.melody_id,
+                                                            self.user,
+                                                            self.melody,
                                                             )
 
 
 ##############################################################################
 
-def init_app():
-    # So that we can use Flask-SQLAlchemy, we'll make a Flask app
-    from flask import Flask
-    app = Flask(__name__)
-
-    connect_to_db(app)
-    print "Connected to DB."
-
 
 def connect_to_db(app):
     """Connect the database to our Flask app."""
 
-    # Configure to use our database
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres:///melodies'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///melodies'
     app.config['SQLALCHEMY_ECHO'] = True
     db.app = app
     db.init_app(app)
 
 
 if __name__ == "__main__":
-    # As a convenience, if we run this module interactively, it will leave
-    # you in a state of being able to work with the database directly.
 
-    # So that we can use Flask-SQLAlchemy, we'll make a Flask app
-    from flask import Flask
-
-    app = Flask(__name__)
+    from server import app
 
     connect_to_db(app)
     print "Connected to DB."
