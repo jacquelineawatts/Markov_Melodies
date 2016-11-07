@@ -2,7 +2,7 @@ from flask import Flask, jsonify, render_template, redirect, request, flash, ses
 from flask_debugtoolbar import DebugToolbarExtension
 from jinja2 import StrictUndefined
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
-from model import connect_to_db
+from model import connect_to_db, db
 from model import User, Melody, Note, MelodyNote, Markov, Outcome, Connection, Like
 # import melody_generator
 
@@ -53,8 +53,9 @@ def show_profile(user_id):
     """Displays a users profile. """
 
     user = User.query.get(user_id)
+    melodies = User.melodies
 
-    return render_template('profile.html', user=user)
+    return render_template('profile.html', user=user, melodies=melodies)
 
 
 @app.route('/signup', methods=['GET'])
@@ -66,32 +67,81 @@ def get_signup_form():
 @app.route('/signup', methods=['POST'])
 def process_signup():
 
-    pass
+    email = request.form.get('email')
+    password = request.form.get('password')
+    first_name = request.form.get('first_name')
+    last_name = request.form.get('last_name')
+
+    emails = db.session.query(User.email).all()
+
+    if email in emails:
+        return redirect('/login')
+
+    else:
+        user = User(email=email,
+                    password=password,
+                    first_name=first_name,
+                    last_name=last_name,
+                    )
+
+        db.session.add(user)
+        db.session.commit()
+        session['user_id'] = user.user_id
+
+        return redirect('/profile/{}'.format(user.user_id))
 
 
 @app.route('/login', methods=['GET'])
 def shows_login():
 
-    pass
+    return render_template('login.html')
 
 
 @app.route('/login', methods=['POST'])
 def process_login():
 
-    pass
+    email = request.form.get('email')
+    password = request.form.get('password')
+
+    user_query = db.session.query(User).filter_by(email=email)
+    try:
+        user = user_query.one()
+    except NoResultFound:
+        print "No user instance found for this email in db."
+        user = None
+    except MultipleResultsFound:
+        print "Multiple user instances found for this email in db."
+        user = user_query.first()
+
+    if user:
+        if user.password == password:
+            flash("You've successfully logged in.")
+            session['user_id'] = user.user_id
+            return redirect('/profile/{}'.format(user.user_id))
+        else:
+            flash("I'm sorry that password is incorrect. Please try again.")
+            return redirect('/login')
+
+    else:
+        flash("""I'm sorry that email is not in our system. Please try again
+                or go to our registration page to create a new account.""")
+        return redirect('/login')
+
 
 
 @app.route('/logout')
 def processes_logout():
     """ """
 
-    pass
+    session['user_id'] = None
+    flash("You've successfully logged out!")
+    return redirect('/')
 
 
 if __name__ == "__main__":
 
     app.debug = True
     connect_to_db(app)
-    DebugToolbarExtension(app)
+    # DebugToolbarExtension(app)
 
     app.run(host='0.0.0.0')

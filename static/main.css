@@ -1,0 +1,4 @@
+.navbar-brand > img {
+    display: inline;
+    max-height: 25px
+}
