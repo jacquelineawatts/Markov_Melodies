@@ -26,9 +26,9 @@ import numpy as np
 # import matplotlib.pyplot as plt
 from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.pipeline import Pipeline, FeatureUnion
 
-
-def build_feature_vectors(filenames):
+def build_feature_corpus(filenames):
     """Takes MIDI files and creates feature arrays to be used for training."""
 
     notes_corpus = []
@@ -71,66 +71,127 @@ def build_feature_vectors(filenames):
         is_major = (mode_at_measure_0 == 'major')
         mode_corpus.append(is_major)
 
-    # Creates weighted vector of note frequency for each score
+    return notes_corpus, steps_corpus, mode_corpus
+
+
+def build_notes_feature_vector_and_fit_model(notes_corpus, mode_corpus):
+
     notes_vectorizer = TfidfVectorizer(min_df=1, analyzer='word', stop_words=None, token_pattern=r'\w#?-?')
-    note_freq_vectors = notes_vectorizer.fit_transform(notes_corpus).todense()
-    # print note_freq_vectors
 
-    # Creates weighted vector of step frequency for each score
-    steps_vectorizer = TfidfVectorizer(min_df=1, analyzer='word', stop_words=None, ngram_range=(2,3), token_pattern=r'\d\d?')
-    step_freq_vectors = steps_vectorizer.fit_transform(steps_corpus).todense()
-    # print step_freq_vectors
+    X_train = notes_vectorizer.fit_transform(notes_corpus)
+    y_train = np.ravel(mode_corpus)
 
-    return note_freq_vectors, step_freq_vectors, mode_corpus
+    classifier = LogisticRegression()
+    classifier.fit(X_train, y_train)
+    print "TRAINING SET SCORE: ", classifier.score(X_train, y_train)
 
-
-#run logistic regression on training set:
-def run_log_regression(training_vector, output_vector):
-    """Runs logistic regression on training feature vectors with provided outcomes."""
-
-    X_train = training_vector
-    y_train = np.ravel(output_vector)
-
-    # # Creating classifiers
-    lr = LogisticRegression()
-
-    # # Fit model to the training data
-    model = lr.fit(X_train, y_train)
-    print model.score(X_train, y_train)
-
-    return model
+    return notes_vectorizer, classifier
 
 
-def predict_outcomes(lr_model, testing_vector, outcomes):
-    """Taking the logistic regression model and new testing data, predict mode outcomes."""
+def build_steps_feature_vector_and_fit_model(steps_corpus, mode_corpus):
 
-    count = 0
-    for i in range(len(testing_vector)):
-        prediction = lr_model.predict(testing_vector[i])
-        actual_outcome = outcomes[i]
-        print prediction, actual_outcome
-        if prediction == actual_outcome:
-            print "SUCCESS!"
-            count += 1
+    steps_vectorizer = TfidfVectorizer(min_df=1, analyzer='word', stop_words=None, ngram_range=(2, 3), token_pattern=r'\d\d?')
 
-    print "Of {} testing files, this model predicted {} correctly.".format(len(testing_vector), count)
+    X_train = steps_vectorizer.fit_transform(steps_corpus)
+    y_train = np.ravel(mode_corpus)
 
+    classifier = LogisticRegression()
+    classifier.fit(X_train, y_train)
+    print "TRAINING SET SCORE: ", classifier.score(X_train, y_train)
+
+    return steps_vectorizer, classifier
+
+
+def build_test_feature_vector_and_predict(vectorizer, classifier, test_corpus, mode_corpus):
+
+    X_test = vectorizer.transform(test_corpus)
+    print type(X_test), X_test.shape
+    print "TESTING VECTOR: ", X_test
+    print ""
+    prediction = classifier.predict(X_test)
+    print 'PREDICTION:', prediction
+    print type(prediction)
+    print ""
 
 # ------------------------------Executable Code --------------------------------
 
 # read test files and construct columns
 filenames = open('test_files.txt').read().split('\n')
 
-# Build training features from input midi files
-note_freq_training, step_freq_training, mode_outcome_training = build_feature_vectors(filenames[::2])
+# Build training feature vectors and classifiers from input midi files
+notes_corpus_training, steps_corpus_training, mode_corpus_training = build_feature_corpus(filenames[::2])
+notes_vectorizer, notes_classifier = build_notes_feature_vector_and_fit_model(notes_corpus_training, mode_corpus_training)
+steps_vectorizer, steps_classifier = build_steps_feature_vector_and_fit_model(steps_corpus_training, mode_corpus_training)
 
-# Run logistic regression model
-notes_model = run_log_regression(note_freq_training, mode_outcome_training)
-steps_model = run_log_regression(step_freq_training, mode_outcome_training)
+# Predict testing data using notes classifier
+notes_corpus_testing, steps_corpus_testing, mode_corpus_testing = build_feature_corpus(filenames[1::2])
+build_test_feature_vector_and_predict(notes_vectorizer, notes_classifier, notes_corpus_testing, mode_corpus_testing)
+build_test_feature_vector_and_predict(steps_vectorizer, steps_classifier, steps_corpus_testing, mode_corpus_testing)
 
-# Build features for testing set of midi files.
-note_freq_testing, step_freq_testing, mode_outcome_testing = build_feature_vectors(filenames[1::2])
 
-# Run predictions based on logistic regression models
-predict_outcomes(notes_model, note_freq_testing, mode_outcome_testing)
-predict_outcomes(steps_model, step_freq_testing, mode_outcome_testing)
+# ------------------------- OLD CODE, DELETE THIS ------------------------------
+
+
+# def fit_and_transform_feature_vectors(notes_corpus, steps_corpus):
+
+#     # Creates weighted vector of note frequency for each score
+#     notes_vectorizer = TfidfVectorizer(min_df=1, analyzer='word', stop_words=None, token_pattern=r'\w#?-?')
+#     note_freq_vectors = notes_vectorizer.fit_transform(notes_corpus)
+#     # print note_freq_vectors
+
+#     # Creates weighted vector of step frequency for each score
+#     steps_vectorizer = TfidfVectorizer(min_df=1, analyzer='word', stop_words=None, ngram_range=(2, 3), token_pattern=r'\d\d?')
+#     step_freq_vectors = steps_vectorizer.fit_transform(steps_corpus)
+#     # print step_freq_vectors
+
+#     return note_freq_vectors, step_freq_vectors
+
+
+## run logistic regression on training set:
+# def run_log_regression(training_vector, output_vector):
+#     """Runs logistic regression on training feature vectors with provided outcomes."""
+
+#     X_train = training_vector
+#     y_train = np.ravel(output_vector)
+
+#     # # Creating classifiers
+#     lr = LogisticRegression()
+
+#     # # Fit model to the training data
+#     model = lr.fit(X_train, y_train)
+#     print model.score(X_train, y_train)
+
+#     return model
+
+
+# def transform_feature_vectors(notes_corpus, steps_corpus):
+
+#     # Creates weighted vector of note frequency for each score
+#     notes_vectorizer = TfidfVectorizer(min_df=1, analyzer='word', stop_words=None, token_pattern=r'\w#?-?')
+#     note_freq_vectors = notes_vectorizer.transform(notes_corpus)
+#     # print note_freq_vectors
+
+#     # Creates weighted vector of step frequency for each score
+#     steps_vectorizer = TfidfVectorizer(min_df=1, analyzer='word', stop_words=None, ngram_range=(2, 3), token_pattern=r'\d\d?')
+#     step_freq_vectors = steps_vectorizer.transform(steps_corpus)
+#     # print step_freq_vectors
+
+#     return note_freq_vectors, step_freq_vectors
+
+
+# def predict_outcomes(lr_model, testing_vector, outcomes):
+#     """Taking the logistic regression model and new testing data, predict mode outcomes."""
+#     print testing_vector.shape
+
+#     count = 0
+#     for i in range(testing_vector.shape[0]):
+#         print i, testing_vector[i].shape
+#         prediction = lr_model.predict(testing_vector[i])
+#         actual_outcome = outcomes[i]
+#         print prediction, actual_outcome
+#         if prediction == actual_outcome:
+#             print "SUCCESS!"
+#             count += 1
+
+#     print "Of {} testing files, this model predicted {} correctly.".format(len(testing_vector), count)
+
