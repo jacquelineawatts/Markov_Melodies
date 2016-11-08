@@ -1,9 +1,9 @@
-"""This script generates new melodies using the Markov chains previously built 
+"""This script generates new melodies using the Markov chains previously built
 from sample MIDI files. """
 
-from random import choice
-from markov import chains
+from model import Markov, Note, Outcome, get_markov_by_tuple
 import music21
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 
 
 def generate_melody(length, starter_notes):
@@ -15,13 +15,14 @@ def generate_melody(length, starter_notes):
     for note in current_key:
         new_melody.append(note)
 
-    # Runs loop to: 1)Grab random value, append to text string, and reassign new key
-    # Limits text string to 1000 char
+    # Loop to grab random outcome according to weighted probability, append to
+    # new melody, and shift key by one.
     while len(new_melody) < length:
-        if current_key in chains:
-            value = choice(chains[current_key])
-            new_melody.append(value)
-            current_key = (current_key[1], value)
+        markov = get_markov_by_tuple(current_key)
+        if markov:
+            outcome = markov.select_outcome().note.show_name_with_octave()
+            new_melody.append(outcome)
+            current_key = (current_key[1], outcome)
         # Right now, just breaks out of loop if it reaches a key that doesn't have
         # any corresponding values. When real data is in here, check to see if this
         # will still be a problem.
@@ -29,6 +30,7 @@ def generate_melody(length, starter_notes):
             break
 
     return new_melody
+
 
 def show_stream(generated_melody):
 
@@ -47,12 +49,22 @@ def show_stream(generated_melody):
             pass
 
     # show() displays the stream in Finale Notepad
-    notes_stream.show('text')
+    # save to disk, actually generate midi file
+    # Save to session while user is playing around with results, not commit to db
+    # until user decides to save
+    # notes_stream.show('midi')
     return notes_text
-
 
 
 # ------------------------------EXECUTABLE CODE -------------------------------
 
 # generated_melody = generate_melody(48, ('D4', 'A3'))
 # show_stream(generated_melody)
+
+# ------------------------------EXECUTABLE CODE -------------------------------
+
+if __name__ == "__main__":
+
+    connect_to_db(app)
+    db.create_all()
+    print "Connected to DB."

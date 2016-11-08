@@ -1,4 +1,6 @@
 from flask.ext.sqlalchemy import SQLAlchemy
+from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
+import numpy as np
 
 db = SQLAlchemy()
 
@@ -72,6 +74,29 @@ class Note(db.Model):
                                                   self.octave,
                                                   )
 
+    def show_name_with_octave(self):
+
+        return (self.pitch + str(self.octave)).encode('latin-1')
+
+
+def get_note_by_nameWithOctave(nameWithOctave):
+
+        pitch = nameWithOctave[:-1]
+        octave = nameWithOctave[-1]
+
+        note = Note.query.filter_by(pitch=pitch, octave=octave)
+        try:
+            note = note.one()
+
+        except NoResultFound:
+            print "No note found."
+            note = None
+
+        except MultipleResultsFound:
+            print "Multiple notes found."
+            note = note.first()
+
+        return note
 
 class MelodyNote(db.Model):
     """Middle table associating a melody with its corresponding notes. Additional
@@ -114,6 +139,41 @@ class Markov(db.Model):
                                                          self.first_note,
                                                          self.second_note,
                                                          )
+
+    def select_outcome(self):
+
+        potential_outcomes = [(outcome, outcome.weight) for outcome in self.outcomes]
+        outcomes = [outcome[0] for outcome in potential_outcomes]
+        weights = [outcome[1] for outcome in potential_outcomes]
+        total = float(sum(weights))
+        probability = [weight/total for weight in weights]
+
+        outcome_note = np.random.choice(outcomes, 1, p=probability)
+
+        return outcome_note[0]
+
+
+def get_markov_by_tuple(notes_tuple):
+
+    print notes_tuple
+    first_note = get_note_by_nameWithOctave(notes_tuple[0])
+    print first_note
+    second_note = get_note_by_nameWithOctave(notes_tuple[1])
+    print second_note
+
+    markov = Markov.query.filter_by(first_note_id=first_note.note_id, second_note_id=second_note.note_id)
+    try:
+        markov = markov.one()
+
+    except NoResultFound:
+        print "No Markov key for that tuple."
+        markov = None
+
+    except MultipleResultsFound:
+        print "Mult Markov keys found for that tuple."
+        markov = markov.first()
+
+    return markov
 
 
 class Outcome(db.Model):
@@ -208,10 +268,10 @@ class Like(db.Model):
 ##############################################################################
 
 
-def connect_to_db(app):
+def connect_to_db(app, db_uri="postgresql:///melodies"):
     """Connect the database to our Flask app."""
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///melodies'
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
     app.config['SQLALCHEMY_ECHO'] = True
     db.app = app
     db.init_app(app)

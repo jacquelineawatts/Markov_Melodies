@@ -4,7 +4,7 @@ from jinja2 import StrictUndefined
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from model import connect_to_db, db
 from model import User, Melody, Note, MelodyNote, Markov, Outcome, Connection, Like
-# import melody_generator
+import melody_generator
 
 app = Flask(__name__)
 app.secret_key = "%ri*.\xab\x12\x81\x9b\x14\x1b\xd3\x86\xcaK\x8b\x87\t\x8c\xaf\x9d\x14\x87\x8a"
@@ -115,7 +115,7 @@ def process_login():
 
     if user:
         if user.password == password:
-            flash("You've successfully logged in.")
+            flash("You've successfully logged in!")
             session['user_id'] = user.user_id
             return redirect('/profile/{}'.format(user.user_id))
         else:
@@ -126,7 +126,6 @@ def process_login():
         flash("""I'm sorry that email is not in our system. Please try again
                 or go to our registration page to create a new account.""")
         return redirect('/login')
-
 
 
 @app.route('/logout')
@@ -142,6 +141,6 @@ if __name__ == "__main__":
 
     app.debug = True
     connect_to_db(app)
-    # DebugToolbarExtension(app)
+    DebugToolbarExtension(app)
 
     app.run(host='0.0.0.0')
