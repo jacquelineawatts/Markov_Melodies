@@ -1,10 +1,14 @@
-from flask import Flask, jsonify, render_template, redirect, request, flash, session
+from flask import Flask, render_template, redirect, request, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
+from model import connect_to_db, db
 from jinja2 import StrictUndefined
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
-from model import connect_to_db, db
-from model import User, Melody, Note, MelodyNote, Markov, Outcome, Connection, Like
-import melody_generator
+from user import User, Connection, Like
+from melody import Melody, MelodyNote
+from note import Note, Duration
+from markov import Markov, Outcome
+from genre import Genre, MelodyGenre
+
 
 app = Flask(__name__)
 app.secret_key = "%ri*.\xab\x12\x81\x9b\x14\x1b\xd3\x86\xcaK\x8b\x87\t\x8c\xaf\x9d\x14\x87\x8a"
@@ -35,17 +39,14 @@ def show_results():
     note1 = request.form.get('note1').encode('latin-1')
     note2 = request.form.get('note2').encode('latin-1')
     input_notes = (note1, note2)
-
-    # Need to put some js form validation on frontend for length input,
-    # otherwise comes in as None and throws app into infinite loop...
     length = int(request.form.get('length'))
     mode = request.form.get('mode')
     genres = request.form.get('genres')
 
-    generated_melody = melody_generator.generate_melody(length, input_notes)
-    melody_text = melody_generator.show_stream(generated_melody)
+    generated_melody = Melody.generate_new_melody(length, input_notes, genres)
+    melody_filepath = Melody.save_melody_to_wav_file(generated_melody)
 
-    return render_template('results.html', melody=melody_text)
+    return render_template('results.html', melody_file=melody_filepath)
 
 
 @app.route('/profile/<user_id>')

@@ -5,13 +5,11 @@
 {% block body %}
 
 <h3>Resulting Melody: </h3>
-{% for note in melody %}
-<p>{{ note }}</p>
-{% endfor %}
-
-<!-- <audio controls>
-    Use fluidsynth and fluid-soundfont-gm for midi > wav conversion
+<audio controls> 
+    <source src='{{ melody_file }}' type='audio/wav'> 
 </audio>
- -->
+<button type='button' href='/add_melody'>
+    Save This Melody
+</button>
 
 {% endblock %}
