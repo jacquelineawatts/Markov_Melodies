@@ -6,6 +6,8 @@ from user import User
 from genre import Genre
 from note import Note, Duration
 from markov import Markov
+import cPickle
+from logistic_regression import ItemSelector, predict
 
 
 class Melody(db.Model):
@@ -64,6 +66,45 @@ class Melody(db.Model):
                 break
 
         return new_melody
+
+    @classmethod
+    def build_feature_dict_from_melody(melody):
+
+        features = {}
+        notes_corpus, steps_corpus = [], []
+
+        all_notes = ""
+        all_steps = ""
+
+        notes = []
+        for note in melody:
+            notes.append(note.pitch + str(note.octave))
+            all_notes += note.name + " "
+
+        notes_corpus.append(all_notes)
+
+        for i in range(1, len(notes)):
+            note_start = music21.note.Note(notes[i-1])
+            note_end = music21.note.Note(notes[i])
+            interval = music21.interval.Interval(noteStart=note_start, noteEnd=note_end)
+            step = int((interval.cents)/100)
+            all_steps += str(step) + ' '
+
+        steps_corpus.append(all_steps)
+
+        features['notes_freq'], features['steps_freq'] = notes_corpus, steps_corpus
+        return features
+
+    @classmethod
+    def predict_mode(cls, melody):
+
+        pipeline_file = open('static/pipeline.txt')
+        pipeline = cPickle.load(pipeline_file)
+
+        features = Melody.build_feature_dict_from_melody(melody)
+        is_major = predict(pipeline, features)
+        return is_major
+
 
     @classmethod
     def save_melody_to_wav_file(cls, melody):

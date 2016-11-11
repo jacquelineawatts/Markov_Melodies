@@ -43,8 +43,12 @@ def show_results():
     mode = request.form.get('mode')
     genres = request.form.get('genres')
 
-    generated_melody = Melody.generate_new_melody(length, input_notes, genres)
-    melody_filepath = Melody.save_melody_to_wav_file(generated_melody)
+    while True:
+        generated_melody = Melody.generate_new_melody(length, input_notes, genres)
+        is_major = Melody.predict_mode(generated_melody)
+        if is_major == mode:
+            melody_filepath = Melody.save_melody_to_wav_file(generated_melody)
+            break
 
     return render_template('results.html', melody_file=melody_filepath)
 
