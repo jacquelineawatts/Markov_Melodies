@@ -124,7 +124,7 @@ class Melody(db.Model):
                     note_for_ps = note.pitch[:-1].lower() + 'b'
                 else:
                     note_for_ps = note.pitch.lower()
-                notes_text += ((note_for_ps + str(note.octave), float(note.duration.duration) * 4),)
+                notes_text += ((note_for_ps + str(note.octave), (float(note.duration.duration) ** -1) * 4),)
 
             # Still need to implement handling of rests
             else:
