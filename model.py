@@ -21,4 +21,10 @@ if __name__ == "__main__":
     connect_to_db(app)
     print "Connected to DB."
 
+    from melody import Melody, MelodyNote
+    from genre import Genre, MelodyGenre
+    from note import Note, Duration
+    from markov import Markov, Outcome
+    from user import User, Connection, Like
+
     db.create_all()

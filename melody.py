@@ -8,6 +8,10 @@ from note import Note, Duration
 from markov import Markov
 import cPickle
 from logistic_regression import ItemSelector, predict
+from sklearn.linear_model import LogisticRegression
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.pipeline import Pipeline, FeatureUnion
+from sklearn.base import BaseEstimator, TransformerMixin
 
 
 class Melody(db.Model):
@@ -68,7 +72,7 @@ class Melody(db.Model):
         return new_melody
 
     @classmethod
-    def build_feature_dict_from_melody(melody):
+    def build_feature_dict_from_melody(cls, melody):
 
         features = {}
         notes_corpus, steps_corpus = [], []
@@ -79,7 +83,7 @@ class Melody(db.Model):
         notes = []
         for note in melody:
             notes.append(note.pitch + str(note.octave))
-            all_notes += note.name + " "
+            all_notes += note.pitch + " "
 
         notes_corpus.append(all_notes)
 
@@ -100,11 +104,11 @@ class Melody(db.Model):
 
         pipeline_file = open('static/pipeline.txt')
         pipeline = cPickle.load(pipeline_file)
+        pipeline_file.close()
 
         features = Melody.build_feature_dict_from_melody(melody)
         is_major = predict(pipeline, features)
         return is_major
-
 
     @classmethod
     def save_melody_to_wav_file(cls, melody):
@@ -153,7 +157,6 @@ class MelodyNote(db.Model):
                                                                                  self.note,
                                                                                  self.sequency,
                                                                                  )
-
 
 if __name__ == "__main__":
 

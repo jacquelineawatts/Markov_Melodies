@@ -1,6 +1,7 @@
 from server import app
 from model import connect_to_db, db
 from sqlalchemy.orm.exc import NoResultFound
+from psycopg2 import ProgrammingError
 import music21
 from note import Note, Duration
 from genre import Genre
@@ -25,10 +26,10 @@ def convert_score_to_notes(score):
     for note in music21.alpha.theoryAnalysis.theoryAnalyzer.getNotes(score, 0):
         if note is not None:
             try:
-                duration = Duration.query.filter_by(duration=note.duration.quarterLength).one()
+                duration = Duration.query.filter_by(duration=float(note.duration.quarterLength)).one()
 
             except NoResultFound:
-                duration = Duration.add_duration_to_db(note.duration.quarterLength)
+                duration = Duration.add_duration_to_db(float(note.duration.quarterLength))
 
             try:
                 Note.query.filter_by(pitch=note.name,
@@ -128,4 +129,4 @@ if __name__ == "__main__":
     db.create_all()
     print "Connected to DB."
 
-    load_markov_chains('Celtic', 'ryansMammoth')
+    # load_markov_chains('Celtic', 'ryansMammoth')
