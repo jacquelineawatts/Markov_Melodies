@@ -34,6 +34,18 @@ from sklearn.base import BaseEstimator, TransformerMixin
 import cPickle
 
 
+class ItemSelector(BaseEstimator, TransformerMixin):
+
+    def __init__(self, key):
+        self.key = key
+
+    def fit(self, x, y=None):
+        return self
+
+    def transform(self, data_dict):
+        return data_dict[self.key]
+
+
 def build_feature_corpus(corpus):
     """Takes MIDI files and creates feature arrays to be used for training."""
 
@@ -71,18 +83,6 @@ def build_feature_corpus(corpus):
     return features
 
 
-class ItemSelector(BaseEstimator, TransformerMixin):
-
-    def __init__(self, key):
-        self.key = key
-
-    def fit(self, x, y=None):
-        return self
-
-    def transform(self, data_dict):
-        return data_dict[self.key]
-
-
 def build_feature_vector_and_fit_model(features):
 
     pipeline = Pipeline([
@@ -110,18 +110,18 @@ def predict(pipeline, validation_features):
     """Takes notes_corpus as a list of test scores (each a string of notes)."""
 
     predictions = pipeline.predict(validation_features)
-    outcomes = validation_features['outcomes']
+    # outcomes = validation_features['outcomes']
     print 'PREDICTION:', predictions
-    print ""
-    print 'ACTUAL OUTCOMES: ', outcomes
+    # print ""
+    # print 'ACTUAL OUTCOMES: ', outcomes
 
-    count = 0
-    for i in range(len(predictions)):
-        if predictions[i] == outcomes[i]:
-            count += 1
+    # count = 0
+    # for i in range(len(predictions)):
+    #     if predictions[i] == outcomes[i]:
+    #         count += 1
 
-    print '{} correct predictions out of {} sample test files'.format(count, len(outcomes))
-    print float(count)/len(outcomes) * 100
+    # print '{} correct predictions out of {} sample test files'.format(count, len(outcomes))
+    # print float(count)/len(outcomes) * 100
 
     return predictions[0]
 
@@ -137,15 +137,16 @@ if __name__ == "__main__":
 
     # Build training features from input midi files
     features_and_outcomes_dict = build_feature_corpus(training_files)
-    pipeline = build_feature_vector_and_fit_model(features_and_outcomes_dict)
+    trained_pipeline = build_feature_vector_and_fit_model(features_and_outcomes_dict)
 
     # Build features for validation data set of midi files.
     validation_features = build_feature_corpus(validation_files)
-    predict(pipeline, validation_features)
+    predict(trained_pipeline, validation_features)
 
     # PLACING ITEMSELECTOR CLASS IN PICKLE HERE IS NOT WORKING, DOESN'T ALLOW
     # FILE TO LOAD IN MELODY.PY FILE.
-    for_pickling = [pipeline, ItemSelector]
+
     pipeline_file = open('static/pipeline.txt', 'w')
-    cPickle.dump(for_pickling, pipeline_file)
+    cPickle.dump(trained_pipeline, pipeline_file)
+    print "Pickled the pipeline to /static/pipeline.txt."
     pipeline_file.close()

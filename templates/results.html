@@ -7,9 +7,16 @@
 <h3>Resulting Melody: </h3>
 <audio controls> 
     <source src='{{ melody_file }}' type='audio/wav'> 
-</audio>
-<button type='button' href='/add_melody'>
-    Save This Melody
-</button>
+</audio><br>
+{% if 'user_id' in session and session['user_id'] != None %}
+    <a href='/add_melody'>
+        Save This Melody
+    </a>
+{% else %}
+    <a href='/login'>Login </a>
+    or
+    <a href='/signup'> Signup </a>
+    to save your melody.
+{% endif %}
 
 {% endblock %}

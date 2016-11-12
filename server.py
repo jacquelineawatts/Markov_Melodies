@@ -3,11 +3,6 @@ from flask_debugtoolbar import DebugToolbarExtension
 from model import connect_to_db, db
 from jinja2 import StrictUndefined
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
-from user import User, Connection, Like
-from melody import Melody, MelodyNote
-from note import Note, Duration
-from markov import Markov, Outcome
-from genre import Genre, MelodyGenre
 
 
 app = Flask(__name__)
@@ -46,7 +41,10 @@ def show_results():
     while True:
         generated_melody = Melody.generate_new_melody(length, input_notes, genres)
         is_major = Melody.predict_mode(generated_melody)
-        if is_major == mode:
+        print 'PREDICTION OF NEW MELODY: ', is_major, type(is_major)
+        print 'THE USERS PREFERENCE WAS: ', mode, type(mode)
+        if bool(is_major) == bool(mode):
+            print "YAY IT'S A MATCH!"
             melody_filepath = Melody.save_melody_to_wav_file(generated_melody)
             break
 
@@ -143,6 +141,14 @@ def processes_logout():
 
 
 if __name__ == "__main__":
+
+    from user import User, Connection, Like
+    from melody import Melody, MelodyNote
+    from note import Note, Duration
+    from markov import Markov, Outcome
+    from genre import Genre, MelodyGenre
+    from logistic_regression import ItemSelector, predict
+
 
     app.debug = True
     connect_to_db(app)
