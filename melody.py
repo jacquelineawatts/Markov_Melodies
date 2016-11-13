@@ -24,7 +24,7 @@ class Melody(db.Model):
     is_major = db.Column(db.Boolean)
     key = db.Column(db.String(10))
     time_signature = db.Column(db.Float)
-    path_to_file = db.String(256)
+    path_to_file = db.Column(db.String(256))
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
 
     user = db.relationship('User', backref='melodies')
@@ -38,6 +38,32 @@ class Melody(db.Model):
                                                             self.title,
                                                             self.key,
                                                             )
+
+    @classmethod
+    def add_melody_to_db(cls, user_id, title, current_melody):
+        """If user signed in, adds most recently generated melody to the db."""
+
+        title_for_filepath = '_'.join(title.split(' '))
+        filepath = 'static/{}_{}.wav'.format(title_for_filepath, user_id)
+        ps.make_wav(current_melody['notes'], fn=filepath)
+        is_major = bool(current_melody['is_major'])
+
+        try:
+            melody = Melody.query.filter_by(user_id=user_id, title=title).one()
+            # Need to put in handling for if user tries to save another melody with the same title
+
+        except NoResultFound:
+            melody = Melody(title=title,
+                            is_major=is_major,
+                            path_to_file=filepath,
+                            user_id=user_id,
+                            )
+
+            db.session.add(melody)
+            db.session.commit()
+            print "Added new melody object to db."
+
+        return melody
 
     @classmethod
     def generate_new_melody(cls, length, starter_notes, genres):
@@ -111,11 +137,11 @@ class Melody(db.Model):
         return is_major
 
     @classmethod
-    def save_melody_to_wav_file(cls, melody):
-        """Takes list of note objects and outputs a wav file to the server."""
+    def save_melody_to_wav_file(cls, melody, filepath):
+        """Takes list of note objects and outputs wav file to the server."""
 
         #Generates a tuple of tuples in abc notation to pass to pysynth function
-        notes_text = ()
+        notes_abc = ()
         for note in melody:
             print 'NOTE: ', note, type(note)
             if note != 'None':
@@ -124,17 +150,16 @@ class Melody(db.Model):
                     note_for_ps = note.pitch[:-1].lower() + 'b'
                 else:
                     note_for_ps = note.pitch.lower()
-                notes_text += ((note_for_ps + str(note.octave), (float(note.duration.duration) ** -1) * 4),)
+                notes_abc += ((note_for_ps + str(note.octave), (float(note.duration.duration) ** -1) * 4),)
 
             # Still need to implement handling of rests
             else:
                 pass
 
-        print 'NOTES_TEXT:', notes_text
+        print 'NOTES_ABC:', notes_abc
         # Saves newly generated tuple of tuples to wav file in static folder
-        filepath = 'static/temp.wav'
-        ps.make_wav(notes_text, fn=filepath)
-        return filepath
+        ps.make_wav(notes_abc, fn=filepath)
+        return notes_abc
 
 
 class MelodyNote(db.Model):

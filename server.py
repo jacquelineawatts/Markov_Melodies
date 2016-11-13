@@ -24,7 +24,13 @@ def index():
 def adds_melody():
     """Adds a new melody to db."""
 
-    return redirect('/results')
+    user_id = session['user_id']
+    title = request.form.get('title').encode('latin-1')
+    current_melody = session['current_melody']
+
+    melody = Melody.add_melody_to_db(user_id, title, current_melody)
+
+    return redirect('/profile/{}'.format(user_id))
 
 
 @app.route('/results', methods=['POST'])
@@ -45,10 +51,12 @@ def show_results():
         print 'THE USERS PREFERENCE WAS: ', mode, type(mode)
         if bool(is_major) == bool(mode):
             print "YAY IT'S A MATCH!"
-            melody_filepath = Melody.save_melody_to_wav_file(generated_melody)
+            temp_filepath = 'static/temp.wav'
+            notes_abc_notation = Melody.save_melody_to_wav_file(generated_melody, temp_filepath)
+            session['current_melody'] = {'is_major': mode, 'notes': notes_abc_notation, 'wav_filepath': temp_filepath}
             break
 
-    return render_template('results.html', melody_file=melody_filepath)
+    return render_template('results.html', melody_file=temp_filepath)
 
 
 @app.route('/profile/<user_id>')
@@ -56,7 +64,7 @@ def show_profile(user_id):
     """Displays a users profile. """
 
     user = User.query.get(user_id)
-    melodies = User.melodies
+    melodies = user.melodies
 
     return render_template('profile.html', user=user, melodies=melodies)
 

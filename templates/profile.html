@@ -9,4 +9,18 @@
 <p>{{ user.email }}</p>
 </div>
 
+<div>
+<h6>Your melodies: </h6>
+{% if melodies %}
+    {% for melody in melodies %}
+        {{ melody.title }}<br>
+        <audio controls> 
+            <source src='{{ melody.path_to_file }}' type='audio/wav'>
+        </audio><br>
+    {% endfor %}
+{% else %}
+    <p>You haven't saved any melodies yet. Please visit the <a href='/'>homepage</a> to create a new melody.</p>
+{% endif %}
+</div>
+
 {% endblock %}

@@ -9,9 +9,11 @@
     <source src='{{ melody_file }}' type='audio/wav'> 
 </audio><br>
 {% if 'user_id' in session and session['user_id'] != None %}
-    <a href='/add_melody'>
-        Save This Melody
-    </a>
+    <h6>Save this melody to your profile: </h6>
+    <form action='/add_melody' method='POST'>
+        <label for='title'>Title: </label><input type='text' name='title'>
+        <input type='submit' value='Submit'>        
+    </form>
 {% else %}
     <a href='/login'>Login </a>
     or
