@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %} All Users {% endblock %}
+
+{% block body %}
+
+{% for user in users %}
+<div>
+    <img src='{{ user.profile_img }}'>
+    <h6>{{ user.first_name }} {{ user.last_name }}</h6>
+    <a href='/follow_user/{{ user.user_id }}'>Follow This User</a>
+</div><br>
+<br>
+<br>
+{% endfor %}
+{% endblock %}

@@ -4,7 +4,7 @@
 
 {% block body %}
 <div>
-<img src='{{ user.profile_img }}'>
+<img src='/{{ user.profile_img }}'>
 <p>{{ user.first_name }} {{ user.last_name }}</p>
 <p>{{ user.email }}</p>
 </div>
@@ -15,7 +15,7 @@
     {% for melody in melodies %}
         {{ melody.title }}<br>
         <audio controls> 
-            <source src='{{ melody.path_to_file }}' type='audio/wav'>
+            <source src='/{{ melody.path_to_file }}' type='audio/wav'>
         </audio><br>
     {% endfor %}
 {% else %}
