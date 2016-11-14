@@ -1,5 +1,6 @@
 from model import connect_to_db, db
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
+from flask import flash
 
 
 class User(db.Model):
@@ -46,6 +47,26 @@ class Connection(db.Model):
                                                                          self.follower_user_id,
                                                                          self.following_user_id,
                                                                          )
+
+    @classmethod
+    def add_connection_to_db(cls, follower_user_id, following_user_id):
+        """Given the follower and following user ids, adds connection to db."""
+
+        try:
+            connection = Connection.query.filter_by(follower_user_id=follower_user_id,
+                                                    following_user_id=following_user_id,
+                                                    ).one()
+            flash("You're already following that user!")
+
+        except NoResultFound:
+            connection = Connection(follower_user_id=follower_user_id,
+                                    following_user_id=following_user_id,
+                                    )
+            db.session.add(connection)
+            db.session.commit()
+            print "Added new connection object to the db."
+            following = User.query.get(following_user_id)
+            flash("You're now following {} {}".format(following.first_name, following.last_name))
 
 
 class Like(db.Model):

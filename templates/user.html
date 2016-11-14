@@ -4,13 +4,18 @@
 
 {% block body %}
 <div>
-<img src='/{{ user.profile_img }}'>
+<img class="profile_img" src='/{{ user.profile_img }}'>
 <p>{{ user.first_name }} {{ user.last_name }}</p>
 <p>{{ user.email }}</p>
 </div>
 
 <div>
-<h6>Your melodies: </h6>
+{% if user.user_id == session['user_id'] %}
+    <h6>My melodies: </h6>
+{% else %}
+    <h6>{{ user.first_name }}'s melodies: </h6>
+{% endif %}
+
 {% if melodies %}
     {% for melody in melodies %}
         {{ melody.title }}<br>

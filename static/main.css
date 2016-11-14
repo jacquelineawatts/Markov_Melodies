@@ -2,3 +2,7 @@
     display: inline;
     max-height: 25px
 }
+
+.profile_img {
+    max-width: 150px;
+}

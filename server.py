@@ -81,8 +81,11 @@ def show_results():
 def show_all_users():
     """Display all users."""
 
-    users = User.query.all()
-    return render_template('users.html', users=users)
+    current_user = User.query.get(session['user_id'])
+    all_users = User.query.filter(User.user_id != current_user.user_id).all()
+    current_user_following = current_user.following
+
+    return render_template('users.html', users=all_users, following=current_user_following)
 
 
 @app.route('/user/<user_id>')
@@ -94,6 +97,17 @@ def show_user_profile(user_id):
 
     return render_template('user.html', user=user, melodies=melodies)
 
+
+@app.route('/follow_user/<user_id>')
+def add_connection(user_id):
+    """Create new follower-following connection."""
+
+    follower_user_id = session['user_id']
+    following_user_id = user_id
+
+    Connection.add_connection_to_db(follower_user_id, following_user_id)
+
+    return redirect('/user/{}'.format(following_user_id))
 
 # ------------------------------ IMAGE UPLOADING -------------------------------
 # HOW DO I SHIFT THIS STUFF INTO ANOTHER FILE (LIKE IMAGE_HANDLER.PY) WITHOUT
