@@ -118,4 +118,4 @@ if __name__ == "__main__":
     connect_to_db(app)
     print "Connected to DB."
 
-    db.create_all()
+    # db.create_all()

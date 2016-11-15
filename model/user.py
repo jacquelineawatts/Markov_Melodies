@@ -29,6 +29,21 @@ class User(db.Model):
                                                               self.email,
                                                               )
 
+    @classmethod
+    def add_user_to_db(cls, email, password, first_name, last_name, profile_img):
+
+        user = User(email=email,
+                    password=password,
+                    first_name=first_name,
+                    last_name=last_name,
+                    profile_img=profile_img,
+                    )
+
+        db.session.add(user)
+        db.session.commit()
+
+        return user
+
 
 class Connection(db.Model):
     """Class for Connections; like an association table for Users to Users relationships?"""
@@ -68,6 +83,20 @@ class Connection(db.Model):
             following = User.query.get(following_user_id)
             flash("You're now following {} {}".format(following.first_name, following.last_name))
 
+    @classmethod
+    def delete_connection(cls, follower_user_id, following_user_id):
+        """Delete a connection between users."""
+
+        try:
+            connection = Connection.query.filter_by(follower_user_id=follower_user_id,
+                                                    following_user_id=following_user_id,
+                                                    ).one()
+            db.session.delete(connection)
+            db.session.commit()
+
+        except NoResultFound:
+            print "That connection was not in the db."
+
 
 class Like(db.Model):
     """Class for Likes """
@@ -87,11 +116,60 @@ class Like(db.Model):
                                                             self.melody,
                                                             )
 
+    # Could create the add_delete toggle within here... what's best practices?
+    @classmethod
+    def add_like(cls, user_id, melody_id):
+        """Given user and melody ids, adds a new like object to db."""
 
-if __name__ == "__main__":
+        try:
+            like = Like.query.filter_by(user_id=user_id,
+                                        melody_id=melody_id,
+                                        ).one()
 
-    from server import app
-    connect_to_db(app)
-    print "Connected to DB."
+        except NoResultFound:
+            like = Like(user_id=user_id,
+                        melody_id=melody_id,
+                        )
 
-    db.create_all()
+            db.session.add(like)
+            db.session.commit()
+            print "Added new like object to the db."
+
+    @classmethod
+    def delete_like(cls, user_id, melody_id):
+        """Deletes a like object from the db. """
+
+        try:
+            like = Like.query.filter_by(user_id=user_id,
+                                        melody_id=melody_id,
+                                        ).one()
+            db.session.delete(like)
+            db.session.commit()
+
+        except NoResultFound:
+            print "That like object was not in the db."
+
+    @classmethod
+    def check_for_likes(cls, melodies, user_id):
+        """Checks for existence of likes in list of melodies.
+
+        Returns a list of melodies where like_exists is true."""
+
+        likes_exist = []
+        for melody in melodies:
+            try:
+                Like.query.filter_by(melody_id=melody.melody_id, user_id=user_id).one()
+                likes_exist.append(melody)
+            except NoResultFound:
+                print "This user has not liked this melody."
+
+        return likes_exist
+
+
+# if __name__ == "__main__":
+
+#     from server import app
+#     connect_to_db(app)
+#     print "Connected to DB."
+
+    # db.create_all()

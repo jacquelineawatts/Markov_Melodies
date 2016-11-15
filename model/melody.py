@@ -63,6 +63,8 @@ class Melody(db.Model):
             db.session.commit()
             print "Added new melody object to db."
 
+            MelodyNote.add_melody_notes_to_db(melody.melody_id, current_melody['notes'])
+
         return melody
 
     @classmethod
@@ -96,6 +98,7 @@ class Melody(db.Model):
                 break
 
         return new_melody
+
 
     @classmethod
     def build_feature_dict_from_melody(cls, melody):
@@ -161,6 +164,22 @@ class Melody(db.Model):
         ps.make_wav(notes_abc, fn=filepath)
         return notes_abc
 
+    @classmethod
+    def make_melody(cls, length, input_notes, genres, mode):
+
+        while True:
+            generated_melody = Melody.generate_new_melody(length, input_notes, genres)
+            is_major = Melody.predict_mode(generated_melody)
+            print 'PREDICTION OF NEW MELODY: ', is_major, type(is_major)
+            print 'THE USERS PREFERENCE WAS: ', mode, type(mode)
+            if bool(is_major) == bool(mode):
+                print "YAY IT'S A MATCH!"
+                temp_filepath = 'static/temp.wav'
+                notes_abc_notation = Melody.save_melody_to_wav_file(generated_melody, temp_filepath)
+                break
+
+        return temp_filepath, notes_abc_notation
+
 
 class MelodyNote(db.Model):
     """Middle table associating a melody with its corresponding notes. Additional
@@ -183,10 +202,55 @@ class MelodyNote(db.Model):
                                                                                  self.sequency,
                                                                                  )
 
-if __name__ == "__main__":
+    @classmethod
+    def add_single_melody_note_to_db(cls, note_id, melody_id, sequence):
+        """Adds a melodyNote instance to the db. """
 
-    from server import app
-    connect_to_db(app)
-    print "Connected to DB."
+        try:
+            melody_note = MelodyNote.query.filter_by(note_id=note_id,
+                                                     melody_id=melody_id,
+                                                     sequence=sequence,
+                                                     ).one()
+        except NoResultFound:
+            melody_note = MelodyNote(melody_id=melody_id,
+                                     note_id=note_id,
+                                     sequence=sequence,
+                                     )
+            db.session.add(melody_note)
+            db.session.commit()
 
-    db.create_all()
+    @classmethod
+    def add_melody_notes_to_db(cls, melody_id, notes_abc_notation):
+        """ Adds new melody_note instances to the db.
+
+        Given a list of notes that comprise a melody('g4', 8.0)"""
+
+        sequence = 0
+        for note in notes_abc_notation:
+            pitch = str(note[0][0:-1]).upper()
+            print pitch, type(pitch)
+            octave = int(note[0][-1])
+            print octave, type(octave)
+            duration = Duration.query.filter_by(duration=(note[1] / 4) ** -1).one()
+            print duration.duration_id
+
+            try:
+                note = Note.query.filter_by(pitch=pitch, octave=octave, duration_id=duration.duration_id).one()
+
+                MelodyNote.add_single_melody_note_to_db(note_id=note.note_id,
+                                                        melody_id=melody_id,
+                                                        sequence=sequence,
+                                                        )
+            except NoResultFound:
+                print "This note cannot be found in the db."
+
+            sequence += 1
+
+
+# if __name__ == "__main__":
+
+#     from server import app
+#     connect_to_db(app)
+#     print "Connected to DB."
+
+    # db.create_all()
