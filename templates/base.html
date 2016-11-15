@@ -24,8 +24,9 @@
     </div>
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav navbar-right">
-          <li><a href="/users">See All Users</a></li>
         {% if ('user_id' in session) and (session['user_id'])%}
+          <li><a href="/users">See All Users</a></li>
+          <li><a href="/user/{{ session['user_id'] }}">My Profile</a>
           <li><a href="/logout">Logout</a></li>
         {% else %}
           <li><a href="/login" data-toggle="modal" data-target="#loginModal">Login</a></li>

@@ -6,12 +6,12 @@
 
 {% for user in users %}
 <div>
-    <img class="profile_img" src='{{ user.profile_img }}'><br>
+    <a href="/user/{{ user.user_id }}"><img class="profile_img" src='{{ user.profile_img }}'></a><br>
     {{ user.first_name }} {{ user.last_name }}<br>
     {% if user in following %}
-        <a href='/user/{{ user.user_id }}'>You're following this user.</a>
+        <a href='/unfollow/{{ user.user_id }}'>Unfollow this user.</a>
     {% else %}
-        <a href='/follow_user/{{ user.user_id }}'>Follow this user!</a>
+        <a href='/follow_user/{{ user.user_id }}'>Follow this user.</a>
     {% endif %}
 </div>
 <br>

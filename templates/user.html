@@ -10,7 +10,7 @@
 </div>
 
 <div>
-{% if user.user_id == session['user_id'] %}
+{% if is_current_user %}
     <h6>My melodies: </h6>
 {% else %}
     <h6>{{ user.first_name }}'s melodies: </h6>
@@ -22,10 +22,18 @@
         <audio controls> 
             <source src='/{{ melody.path_to_file }}' type='audio/wav'>
         </audio><br>
+        {% if (not is_current_user) and (melody in likes) %}
+            <a href="/unlike/{{ melody.melody_id }}">Unlike this melody</a>           
+        {% elif not is_current_user %}
+            <a href="/add_like/{{ melody.melody_id }}">Like this melody</a>
+        {% endif %}<br>
     {% endfor %}
 {% else %}
-    <p>You haven't saved any melodies yet. Please visit the <a href='/'>homepage</a> to create a new melody.</p>
+    {% if is_current_user %}
+        <p>You haven't saved any melodies yet. Please visit the <a href='/'>homepage</a> to create a new melody.</p>
+    {% else %}
+        <p>{{ user.first_name }} has no melodies at this time.</p>
+    {% endif %}
 {% endif %}
 </div>
-
 {% endblock %}

@@ -1,13 +1,13 @@
 from flask import Flask, render_template, redirect, request, flash, session, current_app, jsonify
 from flask_debugtoolbar import DebugToolbarExtension
-from model import connect_to_db, db
+from model.model import connect_to_db, db
 from jinja2 import StrictUndefined
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
-from user import User, Connection, Like
-from melody import Melody, MelodyNote
-from note import Note, Duration
-from markov import Markov, Outcome
-from genre import Genre, MelodyGenre
+from model.user import User, Connection, Like
+from model.melody import Melody, MelodyNote
+from model.note import Note, Duration
+from model.markov import Markov, Outcome
+from model.genre import Genre, MelodyGenre
 from logistic_regression import ItemSelector, predict
 # from image_handler import UploadAPI
 
@@ -62,17 +62,8 @@ def show_results():
     mode = request.form.get('mode')
     genres = request.form.get('genres')
 
-    while True:
-        generated_melody = Melody.generate_new_melody(length, input_notes, genres)
-        is_major = Melody.predict_mode(generated_melody)
-        print 'PREDICTION OF NEW MELODY: ', is_major, type(is_major)
-        print 'THE USERS PREFERENCE WAS: ', mode, type(mode)
-        if bool(is_major) == bool(mode):
-            print "YAY IT'S A MATCH!"
-            temp_filepath = 'static/temp.wav'
-            notes_abc_notation = Melody.save_melody_to_wav_file(generated_melody, temp_filepath)
-            session['current_melody'] = {'is_major': mode, 'notes': notes_abc_notation, 'wav_filepath': temp_filepath}
-            break
+    temp_filepath, notes_abc_notation = Melody.make_melody(length, input_notes, genres, mode)
+    session['current_melody'] = {'is_major': mode, 'notes': notes_abc_notation, 'wav_filepath': temp_filepath}
 
     return render_template('results.html', melody_file=temp_filepath)
 
@@ -94,8 +85,16 @@ def show_user_profile(user_id):
 
     user = User.query.get(user_id)
     melodies = user.melodies
+    current_user = session['user_id']
+    is_current_user = (user.user_id == current_user)
+    likes = Like.check_for_likes(melodies, current_user)
 
-    return render_template('user.html', user=user, melodies=melodies)
+    return render_template('user.html',
+                           user=user,
+                           melodies=melodies,
+                           is_current_user=is_current_user,
+                           likes=likes,
+                           )
 
 
 @app.route('/follow_user/<user_id>')
@@ -109,11 +108,44 @@ def add_connection(user_id):
 
     return redirect('/user/{}'.format(following_user_id))
 
+
+@app.route('/unfollow/<user_id>')
+def delete_connection(user_id):
+
+    follower_user_id = session['user_id']
+    following_user_id = user_id
+
+    Connection.delete_connection(follower_user_id, following_user_id)
+
+    return redirect('/users')
+
+
+@app.route('/add_like/<melody_id>')
+def add_like_to_melody(melody_id):
+
+    melody = Melody.query.get(melody_id)
+    melody_user_id = melody.user.user_id
+    current_user_id = session['user_id']
+    Like.add_like(current_user_id, melody_id)
+
+    return redirect('/user/{}'.format(melody_user_id))
+
+
+@app.route('/unlike/<melody_id>')
+def delete_like_from_melody(melody_id):
+
+    melody = Melody.query.get(melody_id)
+    melody_user_id = melody.user.user_id
+    current_user_id = session['user_id']
+    Like.delete_like(current_user_id, melody_id)
+
+    return redirect('/user/{}'.format(melody_user_id))
+
 # ------------------------------ IMAGE UPLOADING -------------------------------
 # HOW DO I SHIFT THIS STUFF INTO ANOTHER FILE (LIKE IMAGE_HANDLER.PY) WITHOUT
 # WORRYING ABOUT CIRCULAR REFERENCES?
 
-# ----- FOR TESTING IMG UPLOADER ------
+
 def make_response(status=200, content=None):
     """ Construct a response to an upload request.
 
@@ -125,7 +157,8 @@ def make_response(status=200, content=None):
     """
 
     return current_app.response_class(json.dumps(content,
-        indent=None if request.is_xhr else 2), mimetype='text/plain')
+                                      indent=None if request.is_xhr else 2),
+                                      mimetype='text/plain')
 
 
 def validate(attrs):
@@ -207,6 +240,7 @@ app.add_url_rule('/upload/<uuid>', view_func=upload_view, methods=['DELETE', ])
 
 # --------------------------- PROFILE REGISTRATION -----------------------------
 
+
 @app.route('/signup', methods=['GET'])
 def get_signup_form():
 
@@ -225,23 +259,20 @@ def process_signup():
     emails = db.session.query(User.email).all()
 
     if email in emails:
+        flash("You already have an account. Please sign in.")
+        session['img_upload_filepath'] = None
         return redirect('/login')
 
     else:
-        user = User(email=email,
-                    password=password,
-                    first_name=first_name,
-                    last_name=last_name,
-                    profile_img=profile_img,
-                    )
-
-        db.session.add(user)
-        db.session.commit()
+        user = User.add_user_to_db(email, password, first_name, last_name, profile_img)
+        flash("Thank you for signing up for an account.")
         session['user_id'] = user.user_id
+        session['img_upload_filepath'] = None
 
         return redirect('/user/{}'.format(user.user_id))
 
 # ------------------------------- LOGGING IN/OUT -------------------------------
+
 
 @app.route('/login', methods=['GET'])
 def shows_login():
@@ -255,7 +286,7 @@ def process_login():
     email = request.form.get('email')
     password = request.form.get('password')
 
-    user_query = db.session.query(User).filter_by(email=email)
+    user_query = User.query.filter_by(email=email)
     try:
         user = user_query.one()
     except NoResultFound:
@@ -294,6 +325,7 @@ if __name__ == "__main__":
 
     app.debug = True
     connect_to_db(app)
-    # DebugToolbarExtension(app)
+    DebugToolbarExtension(app)
+    app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
     app.run(host='0.0.0.0')
