@@ -3,9 +3,10 @@ from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 import pysynth_b as ps
 import music21
 from user import User
-from genre import Genre
+from genre import Genre, MelodyGenre
 from note import Note, Duration
 from markov import Markov
+from analyzer import Analyzer, all_analyzers
 import cPickle
 from logistic_regression import ItemSelector, predict
 from sklearn.linear_model import LogisticRegression
@@ -63,7 +64,8 @@ class Melody(db.Model):
             db.session.commit()
             print "Added new melody object to db."
 
-            MelodyNote.add_melody_notes_to_db(melody.melody_id, current_melody['notes'])
+            MelodyNote.iterate_over_melody(melody.melody_id, current_melody['notes'])
+            MelodyGenre.add_melody_genre_to_db(melody.melody_id, current_melody['genres'])
 
         return melody
 
@@ -80,17 +82,20 @@ class Melody(db.Model):
 
             new_melody.append(note)
 
-        current_key = (new_melody[0], new_melody[1])
-        print 'CURRENT KEY', current_key
-
         # Loop to grab random outcome according to weighted probability, append to
         # new melody, and shift key by one.
         while len(new_melody) < length:
+
+            current_key = (new_melody[-2], new_melody[-1])
+            print 'CURRENT KEY', current_key
+
             markov = Markov.get_markov_by_tuple(current_key, genres)
+            print "MY MARKOV: ", markov
             if markov:
+                print "Selecting an outcome..."
                 outcome = markov.select_outcome()
                 new_melody.append(outcome)
-                current_key = (current_key[1], outcome)
+                # current_key = (current_key[1], outcome)
             # Right now, just breaks out of loop if it reaches a key that doesn't have
             # any corresponding values. When real data is in here, check to see if this
             # will still be a problem.
@@ -99,45 +104,80 @@ class Melody(db.Model):
 
         return new_melody
 
-
     @classmethod
-    def build_feature_dict_from_melody(cls, melody):
+    def add_ending(cls, generated_melody):
+        """Add longer duration ending note to end of generated melody."""
 
-        features = {}
-        notes_corpus, steps_corpus = [], []
+        end_note = generated_melody[-1]
+        if end_note.duration < 0.5:
+            try:
+                new_end = Note.query.filter((Note.pitch == end_note.pitch) &
+                                            (Note.octave == end_note.octave) &
+                                            (Note.duration > 0.5)).first()
 
-        all_notes = ""
-        all_steps = ""
+            except NoResultFound:
+                note = end_note.pitch + str(end_note.octave)
+                note_music21_obj = music21.note.Note(note)
+                new_end = Note.add_note_to_db(note_music21_obj, 1.0)
 
-        notes = []
-        for note in melody:
-            notes.append(note.pitch + str(note.octave))
-            all_notes += note.pitch + " "
+            generated_melody.append(new_end)
+        else:
+            pass
+        # new_end = current_end
+        return generated_melody
 
-        notes_corpus.append(all_notes)
+    # @classmethod
+    # def build_notes_corpus(cls, melody):
+    #     """ """
 
-        for i in range(1, len(notes)):
-            note_start = music21.note.Note(notes[i-1])
-            note_end = music21.note.Note(notes[i])
-            interval = music21.interval.Interval(noteStart=note_start, noteEnd=note_end)
-            step = int((interval.cents)/100)
-            all_steps += str(step) + ' '
+    #     notes_corpus = []
+    #     all_notes = ""
 
-        steps_corpus.append(all_steps)
+    #     notes = []
+    #     for note in melody:
+    #         notes.append(note.pitch + str(note.octave))
+    #         all_notes += note.pitch + " "
 
-        features['notes_freq'], features['steps_freq'] = notes_corpus, steps_corpus
-        return features
+    #     notes_corpus.append(all_notes)
 
-    @classmethod
-    def predict_mode(cls, melody):
+    #     return notes_corpus, notes
 
-        pipeline_file = open('static/pipeline.txt')
-        pipeline = cPickle.load(pipeline_file)
-        pipeline_file.close()
+    # @classmethod
+    # def build_steps_corpus(cls, melody, notes):
 
-        features = Melody.build_feature_dict_from_melody(melody)
-        is_major = predict(pipeline, features)
-        return is_major
+    #     steps_corpus = []
+    #     all_steps = ""
+
+    #     for i in range(1, len(notes)):
+    #         note_start = music21.note.Note(notes[i-1])
+    #         note_end = music21.note.Note(notes[i])
+    #         interval = music21.interval.Interval(noteStart=note_start, noteEnd=note_end)
+    #         step = int((interval.cents)/100)
+    #         all_steps += str(step) + ' '
+
+    #     steps_corpus.append(all_steps)
+    #     return steps_corpus
+
+    # @classmethod
+    # def build_features_from_melody(cls, melody):
+    #     """Builds feature vector for machine learning."""
+
+    #     features = {}
+    #     features['notes_freq'], notes = Melody.build_notes_corpus(melody)
+    #     features['steps_freq'] = Melody.build_steps_corpus(melody, notes)
+    #     return features
+
+    # @classmethod
+    # def predict_mode(cls, melody):
+
+    #     pipeline_file = open('static/pipeline.txt')
+    #     pipeline = cPickle.load(pipeline_file)
+    #     pipeline_file.close()
+
+    #     features = Melody.build_features_from_melody(melody)
+    #     is_major = predict(pipeline, features)
+    #     # print "IS_MAJOR PERCENTAGE PROBABILITY: ", is_major
+    #     return is_major
 
     @classmethod
     def save_melody_to_wav_file(cls, melody, filepath):
@@ -153,13 +193,14 @@ class Melody(db.Model):
                     note_for_ps = note.pitch[:-1].lower() + 'b'
                 else:
                     note_for_ps = note.pitch.lower()
-                notes_abc += ((note_for_ps + str(note.octave), (float(note.duration.duration) ** -1) * 4),)
+                notes_abc += ((note_for_ps + str(note.octave), Duration.convert_duration_db_to_abc(float(note.duration.duration))),)
 
             # Still need to implement handling of rests
             else:
                 pass
 
         print 'NOTES_ABC:', notes_abc
+
         # Saves newly generated tuple of tuples to wav file in static folder
         ps.make_wav(notes_abc, fn=filepath)
         return notes_abc
@@ -168,17 +209,25 @@ class Melody(db.Model):
     def make_melody(cls, length, input_notes, genres, mode):
 
         while True:
-            generated_melody = Melody.generate_new_melody(length, input_notes, genres)
-            is_major = Melody.predict_mode(generated_melody)
-            print 'PREDICTION OF NEW MELODY: ', is_major, type(is_major)
-            print 'THE USERS PREFERENCE WAS: ', mode, type(mode)
-            if bool(is_major) == bool(mode):
+            generated_melody = Melody.generate_new_melody(length - 1, input_notes, genres)
+            melody = Melody.add_ending(generated_melody)
+
+            analyzer_comparison, all_probabilities = Analyzer.build_comparison(all_analyzers, melody, mode)
+            high_probs = [prob for prob in all_probabilities if prob > 0.75]
+
+            if (max(all_probabilities)) > 0.90 or len(high_probs) > (len(all_probabilities) / 2):
                 print "YAY IT'S A MATCH!"
+
                 temp_filepath = 'static/temp.wav'
-                notes_abc_notation = Melody.save_melody_to_wav_file(generated_melody, temp_filepath)
+                notes_abc_notation = Melody.save_melody_to_wav_file(melody, temp_filepath)
                 break
 
-        return temp_filepath, notes_abc_notation
+            # is_major = Analyzer.predict_mode(melody)
+            # print 'PREDICTION OF NEW MELODY: ', is_major, type(is_major)
+            # print 'THE USERS PREFERENCE WAS: ', mode, type(mode)
+            # if bool(is_major) == bool(mode):
+
+        return temp_filepath, notes_abc_notation, analyzer_comparison
 
 
 class MelodyNote(db.Model):
@@ -203,7 +252,7 @@ class MelodyNote(db.Model):
                                                                                  )
 
     @classmethod
-    def add_single_melody_note_to_db(cls, note_id, melody_id, sequence):
+    def add_melody_note_to_db(cls, note_id, melody_id, sequence):
         """Adds a melodyNote instance to the db. """
 
         try:
@@ -220,8 +269,8 @@ class MelodyNote(db.Model):
             db.session.commit()
 
     @classmethod
-    def add_melody_notes_to_db(cls, melody_id, notes_abc_notation):
-        """ Adds new melody_note instances to the db.
+    def iterate_over_melody(cls, melody_id, notes_abc_notation):
+        """ Iterates thru notes in abc notation melody.
 
         Given a list of notes that comprise a melody('g4', 8.0)"""
 
@@ -231,16 +280,16 @@ class MelodyNote(db.Model):
             print pitch, type(pitch)
             octave = int(note[0][-1])
             print octave, type(octave)
-            duration = Duration.query.filter_by(duration=(note[1] / 4) ** -1).one()
+            duration = Duration.query.filter_by(duration=Duration.convert_duration_abc_to_db(note[1])).one()
             print duration.duration_id
 
             try:
                 note = Note.query.filter_by(pitch=pitch, octave=octave, duration_id=duration.duration_id).one()
 
-                MelodyNote.add_single_melody_note_to_db(note_id=note.note_id,
-                                                        melody_id=melody_id,
-                                                        sequence=sequence,
-                                                        )
+                MelodyNote.add_melody_note_to_db(note_id=note.note_id,
+                                                 melody_id=melody_id,
+                                                 sequence=sequence,
+                                                 )
             except NoResultFound:
                 print "This note cannot be found in the db."
 

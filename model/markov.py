@@ -23,12 +23,13 @@ class Markov(db.Model):
 
     def __repr__(self):
         return "<Markov ID: {}, Bi-gram: {}, {}>".format(self.markov_id,
-                                                         self.first_note,
-                                                         self.second_note,
+                                                         self.first_note.pitch + str(self.first_note.octave),
+                                                         self.second_note.pitch + str(self.second_note.octave),
                                                          )
 
     def select_outcome(self):
 
+        # Switch this to a dictionary instead of two parallel lists?
         potential_outcomes = [(outcome, outcome.weight) for outcome in self.outcomes]
         outcomes = [outcome[0] for outcome in potential_outcomes]
         weights = [outcome[1] for outcome in potential_outcomes]
@@ -55,6 +56,41 @@ class Markov(db.Model):
         return markov
 
     @classmethod
+    def find_related_markov(cls, first_note, second_note, genre_ids):
+        """Finds a related markov key if get_markov_by_tuple query returns empty."""
+
+        print "FINDING A NEW MARKOV...."
+        i = 0
+        for note in [first_note, second_note]:
+            potential_replacements = Note.query.filter_by(pitch=note.pitch,
+                                                          octave=note.octave).all()
+
+            for note in potential_replacements:
+                if i == 0:
+                    markov = Markov.get_markov(note, second_note, genre_ids)
+                else:
+                    markov = Markov.get_markov(first_note, note, genre_ids)
+
+                if markov:
+                    print "MARKOV FOUND!!"
+                    return markov
+                else:
+                    continue
+            i += 1
+
+        if not markov:
+            return False
+
+    @classmethod
+    def get_markov(cls, first_note, second_note, genre_ids):
+
+        markov = Markov.query.filter((Markov.first_note_id == first_note.note_id) &
+                                     (Markov.second_note_id == second_note.note_id) &
+                                     (Markov.genre_id.in_(genre_ids))).first()
+
+        return markov
+
+    @classmethod
     def get_markov_by_tuple(cls, notes_tuple, genres):
 
         print 'NOTES TUPLE:', notes_tuple
@@ -62,18 +98,22 @@ class Markov(db.Model):
         print 'FIRST NOTE:', first_note
         second_note = notes_tuple[1]
         print 'SECOND NOTE:', second_note
+        genre_ids = [Genre.get_genre(genre).genre_id for genre in genres]
+        print 'GENRE IDS:', genre_ids
 
+        markov = Markov.query.filter((Markov.first_note_id == first_note.note_id) &
+                                     (Markov.second_note_id == second_note.note_id) &
+                                     (Markov.genre_id.in_(genre_ids)))
         try:
-            pass
-            markov = Markov.query.filter_by(first_note_id=first_note.note_id, second_note_id=second_note.note_id).one()
+            markov = markov.one()
 
         except NoResultFound:
             print "No Markov key for that tuple."
-            markov = None
+            markov = Markov.find_related_markov(first_note, second_note, genre_ids)
 
         except MultipleResultsFound:
             print "Mult Markov keys found for that tuple."
-            markov = Markov.query.filter_by(first_note_id=first_note.note_id, second_note_id=second_note.note_id).first()
+            markov = markov.first()
 
         return markov
 

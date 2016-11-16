@@ -32,8 +32,9 @@ UPLOAD_DIRECTORY = os.path.join(STATIC_DIRECTORY, 'images')
 def index():
     """Shows homepage. """
 
-    notes = ['A-4', 'A4', 'A#4', 'B-4', 'B4', 'C4', 'C#4', 'D-4', 'D4', 'D#4',
-             'E-4', 'E4', 'F4', 'F#4', 'G-4', 'G4', 'G#4']
+    notes = Note.get_all_notes()
+    # notes = ['A-4', 'A4', 'A#4', 'B-4', 'B4', 'C4', 'C#4', 'D-4', 'D4', 'D#4',
+    #          'E-4', 'E4', 'F4', 'F#4', 'G-4', 'G4', 'G#4']
 
     return render_template('index.html', notes=notes)
 
@@ -59,13 +60,15 @@ def show_results():
     note2 = request.form.get('note2').encode('latin-1')
     input_notes = (note1, note2)
     length = int(request.form.get('length'))
-    mode = request.form.get('mode')
-    genres = request.form.get('genres')
+    mode = bool(request.form.get('mode'))
+    genres = [genre.encode('latin-1') for genre in request.form.getlist('genres')]
 
-    temp_filepath, notes_abc_notation = Melody.make_melody(length, input_notes, genres, mode)
-    session['current_melody'] = {'is_major': mode, 'notes': notes_abc_notation, 'wav_filepath': temp_filepath}
+    temp_filepath, notes_abc_notation, analyzer_comparison = Melody.make_melody(length, input_notes, genres, mode)
+    print "ANALYZER: ", analyzer_comparison
+    print type(analyzer_comparison)
+    session['current_melody'] = {'is_major': mode, 'notes': notes_abc_notation, 'wav_filepath': temp_filepath, 'genres': genres}
 
-    return render_template('results.html', melody_file=temp_filepath)
+    return render_template('results.html', melody_file=temp_filepath, analyzer_comparison=analyzer_comparison)
 
 
 @app.route('/users')

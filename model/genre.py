@@ -27,6 +27,16 @@ class Genre(db.Model):
             db.session.commit()
             print "Successfully added new genre."
 
+    @classmethod
+    def get_genre(cls, genre_name):
+
+        try:
+            genre = Genre.query.filter_by(genre=genre_name).one()
+        except NoResultFound:
+            print "No genre instance was found with that name."
+
+        return genre
+
 
 class MelodyGenre(db.Model):
     """Association table connecting melodies and genres."""
@@ -42,6 +52,30 @@ class MelodyGenre(db.Model):
                                                                    self.melody_id,
                                                                    self.genre_id,
                                                                    )
+
+    @classmethod
+    def add_melody_genre_to_db(cls, melody_id, genres):
+        """Adds melody_genre instance to the db."""
+
+        for genre in genres:
+            try:
+                genre_id = Genre.query.filter_by(genre=genre).one().genre_id
+
+            except NoResultFound:
+                print "No genre was found with that name."
+
+            try:
+                MelodyGenre.query.filter_by(melody_id=melody_id, genre_id=genre_id).one()
+
+            except NoResultFound:
+                melody_genre = MelodyGenre(melody_id=melody_id,
+                                           genre_id=genre_id,
+                                           )
+
+                db.session.add(melody_genre)
+                db.session.commit()
+                print "Successfully added new new melody_genre association."
+
 
 if __name__ == "__main__":
 

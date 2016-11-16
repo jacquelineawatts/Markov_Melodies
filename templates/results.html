@@ -21,4 +21,10 @@
     to save your melody.
 {% endif %}
 
+<p>Analysis of Melody: </p>
+{% for analyzer in analyzer_comparison %}
+    <p>{{ analyzer }}: <p>
+
+{% endfor %}
+
 {% endblock %}

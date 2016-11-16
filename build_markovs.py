@@ -1,29 +1,42 @@
 from server import app
-from model import connect_to_db, db
+from model.model import connect_to_db, db
 from sqlalchemy.orm.exc import NoResultFound
 from psycopg2 import ProgrammingError
 import music21
-from note import Note, Duration
-from genre import Genre
-from markov import Markov, Outcome
+from model.note import Note, Duration
+from model.genre import Genre
+from model.markov import Markov, Outcome
 
 
 def score_generator(filepaths):
     """Returns list of score objects from music21 builtin corpus of MIDI files."""
 
-    num_of_scores = len(filepaths)
+    num_scores = len(filepaths)
     n = 0
 
-    while n < num_of_scores:
+    while n < num_scores:
         yield music21.corpus.parse(filepaths[n])
         n += 1
 
 
-def convert_score_to_notes(score):
+def part_generator(score):
+    """Return list of part objects that are part of a music21 score."""
+
+    parts = [part for part in score.parts]
+    num_parts = len(parts)
+    n = 0
+
+    while n < num_parts:
+        yield n
+        n += 1
+
+
+def convert_part_to_notes(score, n):
     """Converts score into list of notes."""
 
     notes = []
-    for note in music21.alpha.theoryAnalysis.theoryAnalyzer.getNotes(score, 0):
+
+    for note in music21.alpha.theoryAnalysis.theoryAnalyzer.getNotes(score, n):
         if note is not None:
             try:
                 duration = Duration.query.filter_by(duration=float(note.duration.quarterLength)).one()
@@ -43,12 +56,12 @@ def convert_score_to_notes(score):
     return notes
 
 
-def make_chains(melody, genre):
+def make_chains(notes, genre):
     """Takes input as a list of note, duration tuples, adds markovs + outcomes to db.
 
      A chain will be a key that consists of a tuple of (note1, note2)
     and the value would be a list of the note(s) that follow those two notes
-     in the input melody.
+     in the input notes.
 
     """
 
@@ -56,22 +69,22 @@ def make_chains(melody, genre):
     try:
         genre_id = Genre.query.filter_by(genre=genre).one().genre_id
     except NoResultFound:
-        pass
+        genre_id = None
 
-    while key_note2 < (len(melody) - 1):
+    while key_note2 < (len(notes) - 1):
 
         # Determines note_id for all notes in key + outcome
-        first_note_id = Note.query.filter_by(pitch=melody[key_note1][0][0:-1],
-                                             octave=melody[key_note1][0][-1],
-                                             duration_id=melody[key_note1][1]
+        first_note_id = Note.query.filter_by(pitch=notes[key_note1][0][0:-1],
+                                             octave=notes[key_note1][0][-1],
+                                             duration_id=notes[key_note1][1]
                                              ).one().note_id
-        second_note_id = Note.query.filter_by(pitch=melody[key_note2][0][0:-1],
-                                              octave=melody[key_note2][0][-1],
-                                              duration_id=melody[key_note2][1]
+        second_note_id = Note.query.filter_by(pitch=notes[key_note2][0][0:-1],
+                                              octave=notes[key_note2][0][-1],
+                                              duration_id=notes[key_note2][1]
                                               ).one().note_id
-        outcome_note_id = Note.query.filter_by(pitch=melody[outcome_note][0][0:-1],
-                                               octave=melody[outcome_note][0][-1],
-                                               duration_id=melody[outcome_note][1]
+        outcome_note_id = Note.query.filter_by(pitch=notes[outcome_note][0][0:-1],
+                                               octave=notes[outcome_note][0][-1],
+                                               duration_id=notes[outcome_note][1]
                                                ).one().note_id
 
         # Tests for presence of markov key and adds to db if not present.
@@ -109,15 +122,13 @@ def load_markov_chains(genre, corpus_name):
 
     print "Start importing scores..."
     filepaths = music21.corpus.getComposer(corpus_name)
-    print filepaths
 
     for score in (score_generator(filepaths)):
-        print '*' * 20
-        print "Beginning score:", score
-        print '*' * 20
+        print "Beginning new score: ", score
 
-        notes = convert_score_to_notes(score)
-        make_chains(notes, genre)
+        for n in (part_generator(score)):
+            notes = convert_part_to_notes(score, n)
+            make_chains(notes, genre)
 
 
 # ------------------------------EXECUTABLE CODE -------------------------------
@@ -129,4 +140,4 @@ if __name__ == "__main__":
     db.create_all()
     print "Connected to DB."
 
-    # load_markov_chains('Celtic', 'ryansMammoth')
+    load_markov_chains('Classical', 'bach')

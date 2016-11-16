@@ -1,6 +1,6 @@
 from model import connect_to_db, db
 from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
-
+from random import choice
 
 class Note(db.Model):
     """Class for notes """
@@ -59,13 +59,26 @@ class Note(db.Model):
         octave = nameWithOctave[-1]
 
         try:
-            note = Note.query.filter_by(pitch=pitch, octave=int(octave)).first()
+            all_notes = Note.query.filter_by(pitch=pitch, octave=int(octave)).all()
+            note = choice(all_notes)
 
-        except NoResultFound:
+        except IndexError:
             print "No note found."
             note = None
 
         return note
+
+    @classmethod
+    def get_all_notes(cls):
+
+        # Why does sorted() work here but not .sort()??
+        # return sorted([note[0].encode('latin-1') for note in db.session.query(Note.pitch.distinct()).all()])
+        notes = set()
+        for note_tuple in db.session.query(Note.pitch, Note.octave).all():
+            note = note_tuple[0].encode('latin-1') + str(note_tuple[1])
+            notes.add(note)
+
+        return list(sorted(notes))
 
 
 class Duration(db.Model):
@@ -88,6 +101,19 @@ class Duration(db.Model):
         print "Added new duration object to db."
 
         return duration
+
+    @staticmethod
+    def convert_duration_db_to_abc(duration):
+        """Converts duration from db scale to abc notation scale """
+
+        return (float(duration) ** -1) * 4
+
+    @staticmethod
+    def convert_duration_abc_to_db(duration):
+        """Converts duration from abc notation scale to db scale """
+
+        return (duration / 4) ** -1
+
 
 # if __name__ == "__main__":
 
