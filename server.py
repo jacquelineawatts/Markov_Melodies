@@ -71,6 +71,29 @@ def show_results():
     return render_template('results.html', melody_file=temp_filepath, analyzer_comparison=analyzer_comparison)
 
 
+@app.route('/analyzer_data.json')
+def construct_chart_data():
+
+    chart_data = {"labels": ["Notes Only", "Steps Only", "Both"],
+                  "datasets": [{"data": [0.80, 0.84, 0.89],
+                                "backgroundColor": ['#ff9900', '#0066ff', '#339966'],
+                                "hoverBackgroundColor": ['#ffd699', '#99c2ff', '#9fdfbf'],
+                                }
+                               # {"data": [],
+                               #  "backgroundColor": [],
+                               #  "hoverBackgroundColor": [],
+                               #  },
+                               # {"data": [],
+                               #  "backgroundColor": [],
+                               #  "hoverBackgroundColor": [],
+                               #  }
+                               ]
+                  }
+    print chart_data
+
+    return jsonify(chart_data)
+
+
 @app.route('/users')
 def show_all_users():
     """Display all users."""
