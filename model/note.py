@@ -106,7 +106,12 @@ class Duration(db.Model):
     def convert_duration_db_to_abc(duration):
         """Converts duration from db scale to abc notation scale """
 
-        return (float(duration) ** -1) * 4
+        try:
+            duration = (float(duration) ** -1) * 4
+        except ZeroDivisionError:
+            duration = 2.0
+
+        return duration
 
     @staticmethod
     def convert_duration_abc_to_db(duration):

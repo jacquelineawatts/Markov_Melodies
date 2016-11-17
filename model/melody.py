@@ -109,11 +109,14 @@ class Melody(db.Model):
         """Add longer duration ending note to end of generated melody."""
 
         end_note = generated_melody[-1]
-        if end_note.duration < 0.5:
+        print "END NOTE: ", end_note
+        print "END NOTE DURATION: ", end_note.duration.duration
+        if end_note.duration.duration <= 0.5:
+            duration_ids = db.session.query(Duration.duration_id).filter(Duration.duration > 0.5).all()
             try:
                 new_end = Note.query.filter((Note.pitch == end_note.pitch) &
                                             (Note.octave == end_note.octave) &
-                                            (Note.duration > 0.5)).first()
+                                            (Note.duration_id.in_(duration_ids))).first()
 
             except NoResultFound:
                 note = end_note.pitch + str(end_note.octave)
@@ -125,59 +128,6 @@ class Melody(db.Model):
             pass
         # new_end = current_end
         return generated_melody
-
-    # @classmethod
-    # def build_notes_corpus(cls, melody):
-    #     """ """
-
-    #     notes_corpus = []
-    #     all_notes = ""
-
-    #     notes = []
-    #     for note in melody:
-    #         notes.append(note.pitch + str(note.octave))
-    #         all_notes += note.pitch + " "
-
-    #     notes_corpus.append(all_notes)
-
-    #     return notes_corpus, notes
-
-    # @classmethod
-    # def build_steps_corpus(cls, melody, notes):
-
-    #     steps_corpus = []
-    #     all_steps = ""
-
-    #     for i in range(1, len(notes)):
-    #         note_start = music21.note.Note(notes[i-1])
-    #         note_end = music21.note.Note(notes[i])
-    #         interval = music21.interval.Interval(noteStart=note_start, noteEnd=note_end)
-    #         step = int((interval.cents)/100)
-    #         all_steps += str(step) + ' '
-
-    #     steps_corpus.append(all_steps)
-    #     return steps_corpus
-
-    # @classmethod
-    # def build_features_from_melody(cls, melody):
-    #     """Builds feature vector for machine learning."""
-
-    #     features = {}
-    #     features['notes_freq'], notes = Melody.build_notes_corpus(melody)
-    #     features['steps_freq'] = Melody.build_steps_corpus(melody, notes)
-    #     return features
-
-    # @classmethod
-    # def predict_mode(cls, melody):
-
-    #     pipeline_file = open('static/pipeline.txt')
-    #     pipeline = cPickle.load(pipeline_file)
-    #     pipeline_file.close()
-
-    #     features = Melody.build_features_from_melody(melody)
-    #     is_major = predict(pipeline, features)
-    #     # print "IS_MAJOR PERCENTAGE PROBABILITY: ", is_major
-    #     return is_major
 
     @classmethod
     def save_melody_to_wav_file(cls, melody, filepath):
