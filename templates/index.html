@@ -7,7 +7,7 @@
 <h5>How it works: </h5>
 <p>Markov Melodies is a music composition app which asks users to provide a small amount of seed information (a few starter notes, preference for major vs. minor, length) to allow the app to generate a brand new melody for them. Users can sign up and log in to a profile to save and share their melodies, or they may choose to use the app as a guest user.</p>
 
-<form action='/results' method='POST'>
+<form id='markov' action='/results' method='POST'>
 
     <label for="note1">First Note: </label>
         <select name="note1">
@@ -42,5 +42,23 @@
     <input type="submit" value="Submit">
 
 </form> 
+
+<script>
+
+    $('#markov').on('submit', function(evt) {
+
+        evt.preventDefault();
+        data = $('#markov').serialize();
+
+        $('body').html('');
+
+
+        window.location.href = '/testing?' + data;
+
+        }
+
+        );
+
+</script>
 
 {% endblock %}

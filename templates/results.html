@@ -27,11 +27,11 @@
     <p>{{ analyzer }}: <p>
     <ul>
     {% for features, probability in values.iteritems() %}
-        {% if features == (True, False) %}
+        {% if features == 'Notes' %}
         <li>Notes only: {{ probability }}</li>
-        {% elif features == (False, True) %}
+        {% elif features == 'Steps' %}
         <li>Steps only: {{ probability }}</li>
-        {% elif features == (True, True) %}
+        {% elif features == 'Both' %}
         <li>Both notes and steps: {{ probability }}</li>
         {% endif %}
     {% endfor %}
@@ -45,13 +45,13 @@ var options = { responsive: true,
                 scales: {
                     yAxes: [{
                         ticks: {
-                            min: 0.75,
+                            min: 0.50,
                             max: 1.0,
                             stepSize: 0.05
                         }
                     }]
                 } };
-                
+
 var ctx = document.getElementById("myChart");
 console.log(ctx);
 
