@@ -52,6 +52,7 @@ def adds_melody():
     current_melody = session['current_melody']
 
     melody = Melody.add_melody_to_db(user_id, title, current_melody)
+    flash("You've successfully added a melody to your account.")
 
     return redirect('/user/{}'.format(user_id))
 
@@ -84,18 +85,6 @@ def show_results():
 def construct_chart_data():
 
     analyzer_comparison = session['analyzer_data']
-
-    # probabilities = [analyzer_comparison['Logistic Regression']['Notes'],
-    #                  analyzer_comparison['Logistic Regression']['Steps'],
-    #                  analyzer_comparison['Logistic Regression']['Both']]
-
-    # chart_data = {"labels": ["Notes Only", "Steps Only", "Both"],
-    #               "datasets": [{"data": probabilities,
-    #                             "backgroundColor": ['#ff9900', '#0066ff', '#339966'],
-    #                             "hoverBackgroundColor": ['#ffd699', '#99c2ff', '#9fdfbf'],
-    #                             }
-    #                            ]
-    #               }
 
     chart_data = {"labels": ["Linear Regression", "Multinomial NB", "Support Vector Classification"],
                   "datasets": [{"data": [analyzer_comparison['Logistic Regression']['Notes'],
@@ -285,7 +274,7 @@ if __name__ == "__main__":
 
     app.debug = True
     connect_to_db(app)
-    # DebugToolbarExtension(app)
+    DebugToolbarExtension(app)
     app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
     app.run(host='0.0.0.0')

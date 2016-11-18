@@ -1,29 +1,25 @@
 import unittest
 from server import app
-from model import connect_to_db, db
-from seed import load_seed_users_and_connections
+from model.model import connect_to_db, db
+from flask import session
 from logistic_regression import ItemSelector, predict
 
 
-class FlaskTests(unittest.TestCase):
-    """Integration tests for app."""
+# class FlaskTests(unittest.TestCase):
+#     """Integration tests for app."""
 
-    def setUp(self):
+#     def setUp(self):
 
-        self.client = app.test_client()
-        app.config['TESTING'] = True
-        # What is this 'key' actually supposed to be? os.urandom(24)?
-        app.config['SECRET_KEY'] = 'key'
-        app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+#         self.client = app.test_client()
+#         app.config['TESTING'] = True
+#         # What is this 'key' actually supposed to be? os.urandom(24)?
+#         app.config['SECRET_KEY'] = 'key'
+#         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-        # with self.client as c:
-        #     with c.session_transaction() as sess:
-        #         sess['user_id'] = True
+#         # with self.client as c:
+#         #     with c.session_transaction() as sess:
+#         #         sess['user_id'] = True
 
-    def test_homepage(self):
-
-        result = self.client.get('/')
-        self.assertIn('Welcome', result.data)
 
 
 class FlaskTestsDatabase(unittest.TestCase):
@@ -39,7 +35,11 @@ class FlaskTestsDatabase(unittest.TestCase):
 
         with self.client as c:
             with c.session_transaction() as sess:
-                sess['user_id'] = True
+                sess['user_id'] = 3
+                sess['current_melody'] = {'wav_filepath': 'static/temp.wav',
+                                          'genres': ['Classical'],
+                                          'notes': (('e4', 32.0), ('f#4', 0.6666666666666666)),
+                                          'is_major': True}
 
         connect_to_db(app, "postgresql:///testdb")
         # db.create_all()
@@ -55,6 +55,11 @@ class FlaskTestsDatabase(unittest.TestCase):
     def logout(self):
 
         return self.client.get('logout', follow_redirects=True)
+
+    def test_homepage(self):
+
+        result = self.client.get('/')
+        self.assertIn('Welcome', result.data)
 
     def test_results(self):
 
@@ -90,6 +95,38 @@ class FlaskTestsDatabase(unittest.TestCase):
 
         result = self.login('jacqui@test.org', 'test')
         self.assertIn('Jacqui', result.data)
+
+    def test_users(self):
+
+        result = self.login('jacqui@test.org', 'test')
+        self.assertIn('All Users', result.data)
+
+    def test_add_melody(self):
+
+        result = self.client.post('/add_melody', data=dict(
+            title='My Test Melody'), follow_redirects=True)
+
+        self.assertIn('successfully added a melody to your account', result.data)
+
+    def test_follow_user(self):
+
+        result = self.client.get('/follow_user/1', follow_redirects=True)
+        self.assertIn('following', result.data)
+
+    def test_unfollow_user(self):
+
+        result = self.client.get('unfollow/1', follow_redirects=True)
+        self.assertIn('All Users', result.data)
+
+    def test_add_like(self):
+
+        result = self.client.get('/add_like/3', follow_redirects=True)
+        self.assertIn('Unlike this melody', result.data)
+
+    def test_delete_like(self):
+
+        result = self.client.get('/unlike/3', follow_redirects=True)
+        self.assertIn('Like this melody', result.data)
 
     def tearDown(self):
         """ Do at the end of each test."""
