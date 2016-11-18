@@ -10,11 +10,10 @@ import cPickle
 
 class Analyzer(object):
 
-    def __init__(self, name, pickle_file, analyzes_notes, analyzes_steps, parameters=None):
+    def __init__(self, name, pickle_file, features, parameters=None):
         self.name = name
         self.pickle_file = pickle_file
-        self.analyzes_notes = analyzes_notes
-        self.analyzes_steps = analyzes_steps
+        self.features = features
         self.parameters = parameters
         self.pipeline = None
 
@@ -90,39 +89,39 @@ class Analyzer(object):
     def build_comparison(cls, all_analyzers, melody, mode):
 
         all_probabilities = []
-        analyzer_comparison = {"Logistic Regression": {(True, False): None,
-                                                       (False, True): None,
-                                                       (True, True): None,
+        analyzer_comparison = {"Logistic Regression": {'Notes': None,
+                                                       'Steps': None,
+                                                       'Both': None,
                                                        },
-                               "Naive Bayes": {(True, False): None,
-                                               (False, True): None,
-                                               (True, True): None,
+                               "Naive Bayes": {'Notes': None,
+                                               'Steps': None,
+                                               'Both': None,
                                                },
-                               "Support Vector Classification": {(True, False): None,
-                                                                 (False, True): None,
-                                                                 (True, True): None,
+                               "Support Vector Classification": {'Notes': None,
+                                                                 'Steps': None,
+                                                                 'Both': None,
                                                                  },
                                }
 
         for analyzer in all_analyzers:
-            features_tuple = (analyzer.analyzes_notes, analyzer.analyzes_steps)
             probability = analyzer.calculate_probability_of_mode(melody, mode)
-            analyzer_comparison[analyzer.name][features_tuple] = probability
+            analyzer_comparison[analyzer.name][analyzer.features] = probability
 
             all_probabilities.append(probability)
 
         return analyzer_comparison, all_probabilities
 
 
-lr_notes = Analyzer('Logistic Regression', 'static/pipeline.txt', True, False)
-lr_steps = Analyzer('Logistic Regression', 'static/pipeline.txt', False, True)
-lr_both = Analyzer('Logistic Regression', 'static/pipeline.txt', True, True)
+lr_notes = Analyzer('Logistic Regression', 'static/pipeline_lr_notes.txt', 'Notes')
+lr_steps = Analyzer('Logistic Regression', 'static/pipeline_lr_steps.txt', 'Steps')
+lr_both = Analyzer('Logistic Regression', 'static/pipeline_lr_both.txt', 'Both')
 
-nb_notes = Analyzer('Naive Bayes', 'static/pipeline.txt', True, False)
-nb_steps = Analyzer('Naive Bayes', 'static/pipeline.txt', False, True)
-nb_both = Analyzer('Naive Bayes', 'static/pipeline.txt', True, True)
+nb_notes = Analyzer('Naive Bayes', 'static/pipeline_nbm_notes.txt', 'Notes')
+nb_steps = Analyzer('Naive Bayes', 'static/pipeline_nbm_steps.txt', 'Steps')
+nb_both = Analyzer('Naive Bayes', 'static/pipeline_nbm_both.txt', 'Both')
 
-svc_notes = Analyzer('Support Vector Classification', 'static/pipeline.txt', True, False)
-svc_steps = Analyzer('Support Vector Classification', 'static/pipeline.txt', False, True)
-svc_both = Analyzer('Support Vector Classification', 'static/pipeline.txt', True, True)
+svc_notes = Analyzer('Support Vector Classification', 'static/pipeline_svc_notes.txt', 'Notes')
+svc_steps = Analyzer('Support Vector Classification', 'static/pipeline_svc_steps.txt', 'Steps')
+svc_both = Analyzer('Support Vector Classification', 'static/pipeline_svc_both.txt', 'Both')
 all_analyzers = [lr_notes, lr_steps, lr_both, nb_notes, nb_steps, nb_both, svc_notes, svc_steps, svc_both]
+# all_analyzers = [lr_notes, lr_steps, lr_both]

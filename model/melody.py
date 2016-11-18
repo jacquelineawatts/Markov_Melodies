@@ -111,8 +111,8 @@ class Melody(db.Model):
         end_note = generated_melody[-1]
         print "END NOTE: ", end_note
         print "END NOTE DURATION: ", end_note.duration.duration
-        if end_note.duration.duration <= 0.5:
-            duration_ids = db.session.query(Duration.duration_id).filter(Duration.duration > 0.5).all()
+        if end_note.duration.duration < 1.0:
+            duration_ids = db.session.query(Duration.duration_id).filter(Duration.duration >= 1.0).all()
             try:
                 new_end = Note.query.filter((Note.pitch == end_note.pitch) &
                                             (Note.octave == end_note.octave) &
@@ -163,9 +163,9 @@ class Melody(db.Model):
             melody = Melody.add_ending(generated_melody)
 
             analyzer_comparison, all_probabilities = Analyzer.build_comparison(all_analyzers, melody, mode)
-            high_probs = [prob for prob in all_probabilities if prob > 0.75]
+            high_probs = [prob for prob in all_probabilities if prob > 0.7]
 
-            if (max(all_probabilities)) > 0.90 or len(high_probs) > (len(all_probabilities) / 2):
+            if (max(all_probabilities)) > 0.90 or len(high_probs) > (len(all_probabilities) / 3):
                 print "YAY IT'S A MATCH!"
 
                 temp_filepath = 'static/temp.wav'

@@ -22,6 +22,8 @@
     to save your melody.
 {% endif %}
 
+<canvas id="myChart" width="400" height="400"></canvas>
+
 <p>Analysis of Melody: </p>
 {% for analyzer, values in analyzer_comparison.iteritems() %}
     <p>{{ analyzer }}: <p>
@@ -37,8 +39,6 @@
     {% endfor %}
     </ul>
 {% endfor %}
-
-<canvas id="myChart" width="400" height="400"></canvas>
 
 <script>
 var options = { responsive: true,

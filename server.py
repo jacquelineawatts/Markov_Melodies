@@ -56,10 +56,11 @@ def adds_melody():
     return redirect('/user/{}'.format(user_id))
 
 
-@app.route('/testing')
-def test():
-    time.sleep(5)
-    return str(request.args)
+# @app.route('/testing')
+# def test():
+#     time.sleep(5)
+#     return str(request.args)
+
 
 @app.route('/results', methods=['POST'])
 def show_results():
@@ -71,7 +72,6 @@ def show_results():
     length = int(request.form.get('length'))
     mode = bool(request.form.get('mode'))
     genres = [genre.encode('latin-1') for genre in request.form.getlist('genres')]
-
 
     temp_filepath, notes_abc_notation, analyzer_comparison = Melody.make_melody(length, input_notes, genres, mode)
     session['analyzer_data'] = analyzer_comparison
