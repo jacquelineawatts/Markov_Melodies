@@ -19,6 +19,10 @@ import os.path
 import shutil
 # ------- END TESTING ------
 
+# ------ FOR TESTING REDIRECT ANIMATION STUFF ------
+import time
+# ---------- END TESTING
+
 
 app = Flask(__name__)
 app.secret_key = "%ri*.\xab\x12\x81\x9b\x14\x1b\xd3\x86\xcaK\x8b\x87\t\x8c\xaf\x9d\x14\x87\x8a"
@@ -52,6 +56,11 @@ def adds_melody():
     return redirect('/user/{}'.format(user_id))
 
 
+@app.route('/testing')
+def test():
+    time.sleep(5)
+    return str(request.args)
+
 @app.route('/results', methods=['POST'])
 def show_results():
     """Shows results of a generated melody."""
@@ -63,9 +72,9 @@ def show_results():
     mode = bool(request.form.get('mode'))
     genres = [genre.encode('latin-1') for genre in request.form.getlist('genres')]
 
+
     temp_filepath, notes_abc_notation, analyzer_comparison = Melody.make_melody(length, input_notes, genres, mode)
-    print "ANALYZER: ", analyzer_comparison
-    print type(analyzer_comparison)
+    session['analyzer_data'] = analyzer_comparison
     session['current_melody'] = {'is_major': mode, 'notes': notes_abc_notation, 'wav_filepath': temp_filepath, 'genres': genres}
 
     return render_template('results.html', melody_file=temp_filepath, analyzer_comparison=analyzer_comparison)
@@ -74,22 +83,43 @@ def show_results():
 @app.route('/analyzer_data.json')
 def construct_chart_data():
 
-    chart_data = {"labels": ["Notes Only", "Steps Only", "Both"],
-                  "datasets": [{"data": [0.80, 0.84, 0.89],
-                                "backgroundColor": ['#ff9900', '#0066ff', '#339966'],
-                                "hoverBackgroundColor": ['#ffd699', '#99c2ff', '#9fdfbf'],
+    analyzer_comparison = session['analyzer_data']
+
+    # probabilities = [analyzer_comparison['Logistic Regression']['Notes'],
+    #                  analyzer_comparison['Logistic Regression']['Steps'],
+    #                  analyzer_comparison['Logistic Regression']['Both']]
+
+    # chart_data = {"labels": ["Notes Only", "Steps Only", "Both"],
+    #               "datasets": [{"data": probabilities,
+    #                             "backgroundColor": ['#ff9900', '#0066ff', '#339966'],
+    #                             "hoverBackgroundColor": ['#ffd699', '#99c2ff', '#9fdfbf'],
+    #                             }
+    #                            ]
+    #               }
+
+    chart_data = {"labels": ["Linear Regression", "Multinomial NB", "Support Vector Classification"],
+                  "datasets": [{"data": [analyzer_comparison['Logistic Regression']['Notes'],
+                                         analyzer_comparison['Naive Bayes']['Notes'],
+                                         analyzer_comparison['Support Vector Classification']['Notes'],
+                                         ],
+                                "backgroundColor": ['#ff9900', '#ff9900', '#ff9900'],
+                                "hoverBackgroundColor": ['#ffd699', '#ffd699', '#ffd699'],
+                                },
+                               {"data": [analyzer_comparison['Logistic Regression']['Steps'],
+                                         analyzer_comparison['Naive Bayes']['Steps'],
+                                         analyzer_comparison['Support Vector Classification']['Steps'],
+                                         ],
+                                "backgroundColor": ['#0066ff', '#0066ff', '#0066ff'],
+                                "hoverBackgroundColor": ['#99c2ff', '#99c2ff', '#99c2ff'],
+                                },
+                               {"data": [analyzer_comparison['Logistic Regression']['Both'],
+                                         analyzer_comparison['Naive Bayes']['Both'],
+                                         analyzer_comparison['Support Vector Classification']['Both']],
+                                "backgroundColor": ['#339966', '#339966', '#339966'],
+                                "hoverBackgroundColor": ['#9fdfbf', '#9fdfbf', '#9fdfbf'],
                                 }
-                               # {"data": [],
-                               #  "backgroundColor": [],
-                               #  "hoverBackgroundColor": [],
-                               #  },
-                               # {"data": [],
-                               #  "backgroundColor": [],
-                               #  "hoverBackgroundColor": [],
-                               #  }
                                ]
                   }
-    print chart_data
 
     return jsonify(chart_data)
 
@@ -255,7 +285,7 @@ if __name__ == "__main__":
 
     app.debug = True
     connect_to_db(app)
-    DebugToolbarExtension(app)
+    # DebugToolbarExtension(app)
     app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
     app.run(host='0.0.0.0')
