@@ -1,8 +1,23 @@
 {% extends 'base.html' %}
 
+{% block head %}
+<link rel="stylesheet" type="text/css" href="static/component.css" />
+<script src="static/modernizr.custom.js"></script>
+{% endblock %}
 {% block title %} Homepage {% endblock %}
 
 {% block body %}
+
+<div class="la-anim-6">
+  <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="500" height="500" viewbox="0 0 500 500">
+    <path id="la-anim-6-border" transform="translate(250, 250)"/>
+    <path id="la-anim-6-loader" transform="translate(250, 250) scale(0.9)"/>
+  </svg>
+</div>
+
+<!-- main container -->
+<div class="container">
+
 <h3>Welcome to Markov's Melodies</h3>
 <h5>How it works: </h5>
 <p>Markov Melodies is a music composition app which asks users to provide a small amount of seed information (a few starter notes, preference for major vs. minor, length) to allow the app to generate a brand new melody for them. Users can sign up and log in to a profile to save and share their melodies, or they may choose to use the app as a guest user.</p>
@@ -22,7 +37,9 @@
                 <option value="{{ note }}">{{ note }}</option>
             {% endfor %}
         </select><br>
-    
+
+<div id="la-buttons" class="column">
+
     <label for="length">Length of Output Melody: </label>
     <input type="number" name="length"><br>
     <p>Select if you'd like your melody to be major or minor: </p>
@@ -39,26 +56,81 @@
     <input type="checkbox" name="genres" value="None">
     <label for="none">No Preference</label><br>
 
-    <input type="submit" value="Submit">
+    <input type="submit" class="formSubmit" data-anim="la-anim-6" value="Submit">
+</div>
 
 </form> 
 
+<script src="static/classie.js"></script>
 <script>
+    var loader = document.getElementById('la-anim-6-loader')
+        , border = document.getElementById('la-anim-6-border')
+        , α = 0
+        , π = Math.PI
+        , t = 20
+        
+        , tdraw;
 
+    function PieDraw() {
+        α++;
+        α %= 360;
+        var r = ( α * π / 180 )
+        , x = Math.sin( r ) * 250
+        , y = Math.cos( r ) * - 250
+        , mid = ( α > 180 ) ? 1 : 0
+        , anim = 'M 0 0 v -250 A 250 250 1 ' 
+               + mid + ' 1 ' 
+               +  x  + ' ' 
+               +  y  + ' z';
+
+        loader.setAttribute( 'd', anim );
+        border.setAttribute( 'd', anim );
+        if( α != 0 )
+        tdraw = setTimeout(PieDraw, t); // Redraw
+    }
+
+    function PieReset() {
+        clearTimeout(tdraw);
+        var anim = 'M 0 0 v -250 A 250 250 1 0 1 0 -250 z';
+        loader.setAttribute( 'd', anim );
+        border.setAttribute( 'd', anim );
+    }
+
+    var inProgress = false;
+
+    Array.prototype.slice.call( document.querySelectorAll( '#la-buttons > .formSubmit' ) ).forEach( function( el, i ) {
+        var anim = el.getAttribute( 'data-anim' ),
+            animEl = document.querySelector( '.' + anim );
+
+        el.addEventListener( 'click', function() {
+            if( inProgress ) return false;
+            inProgress = true;
+            classie.add( animEl, 'la-animate' );
+
+            if( anim === 'la-anim-6' ) {
+                PieDraw();
+            }
+
+            setTimeout( function() {
+                classie.remove( animEl, 'la-animate' );
+                
+                if( anim === 'la-anim-6' ) {
+                    PieReset();
+                }
+                
+                inProgress = false;
+            }, 6000 );
+        } );
+    } );
+</script>
+<!-- 
+<script>
     $('#markov').on('submit', function(evt) {
-
         evt.preventDefault();
         data = $('#markov').serialize();
-
-        $('body').html('');
-
-
         window.location.href = '/testing?' + data;
-
-        }
-
-        );
-
+        });
 </script>
 
-{% endblock %}
+ -->
+ {% endblock %}

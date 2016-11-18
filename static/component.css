@@ -1,0 +1,27 @@
+/* Effect 6: Pie Timer from Anders Grimsrud http://codepen.io/agrimsrud/pen/EmCoa */
+.la-anim-6 svg {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	z-index: -1;
+	display: block;
+	width: 500px;
+	height: 500px;
+	-webkit-transform: translateX(-50%) translateY(-50%);
+	transform: translateX(-50%) translateY(-50%);
+	pointer-events: none;
+}
+
+.la-anim-6.la-animate svg {
+	z-index: 100;
+}
+
+#la-anim-6-loader { 
+	fill: #fff; 
+	fill-opacity: 0.05; 
+}
+
+#la-anim-6-border { 
+	fill: #000; 
+	fill-opacity: 0.05;
+}

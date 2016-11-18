@@ -6,3 +6,8 @@
 .profile_img {
     max-width: 150px;
 }
+
+canvas {
+    width: 400px;
+    height: 400px;
+}
