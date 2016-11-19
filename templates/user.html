@@ -9,11 +9,12 @@
 <p>{{ user.email }}</p>
 </div>
 
+<!--######################## DISPLAYING MELODIES ########################### -->
 <div>
 {% if is_current_user %}
-    <h6>My melodies: </h6>
+    <p>My melodies: </p>
 {% else %}
-    <h6>{{ user.first_name }}'s melodies: </h6>
+    <p>{{ user.first_name }}'s melodies: </p>
 {% endif %}
 
 {% if melodies %}
@@ -36,4 +37,26 @@
     {% endif %}
 {% endif %}
 </div>
+
+<!--###################### DISPLAYING FOLLOWERS ####################### -->
+<div>
+    {% if is_current_user %}
+        <p>Who I'm Following: </p>
+        {% for user_id, values in following.iteritems() %}
+            <p>{{ values[0].first_name }} {{ values[0].last_name }}</p>
+            {% if values[1] %}
+                <p> Listen to their most recent melody: </p>
+                <p> {{ values[1].title }} </p>
+                <audio controls> 
+                    <source src='/{{ values[1].path_to_file }}' type='audio/wav'>
+                </audio><br>
+                <p><a href="/user/{{ user_id }}">See all melodies</a></p>
+            {% else %}
+                <p>This user doesn't have any melodies yet.</p> 
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+</div> 
+
+
 {% endblock %}

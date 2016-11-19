@@ -44,6 +44,14 @@ class User(db.Model):
 
         return user
 
+    def find_last_melody(self):
+
+        melody_ids = [melody.melody_id for melody in self.melodies]
+        if melody_ids:
+            return max(melody_ids)
+        else:
+            return None
+
 
 class Connection(db.Model):
     """Class for Connections; like an association table for Users to Users relationships?"""

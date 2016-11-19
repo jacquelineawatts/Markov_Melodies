@@ -73,12 +73,20 @@ def show_results():
     length = int(request.form.get('length'))
     mode = bool(request.form.get('mode'))
     genres = [genre.encode('latin-1') for genre in request.form.getlist('genres')]
-
     temp_filepath, notes_abc_notation, analyzer_comparison = Melody.make_melody(length, input_notes, genres, mode)
-    session['analyzer_data'] = analyzer_comparison
-    session['current_melody'] = {'is_major': mode, 'notes': notes_abc_notation, 'wav_filepath': temp_filepath, 'genres': genres}
 
-    return render_template('results.html', melody_file=temp_filepath, analyzer_comparison=analyzer_comparison)
+    if temp_filepath is None:
+        flash("I'm sorry, there's no melody for that combination of seed notes. Please start over.")
+        return redirect('/')
+
+    else:
+        session['analyzer_data'] = analyzer_comparison
+        session['current_melody'] = {'is_major': mode,
+                                     'notes': notes_abc_notation,
+                                     'wav_filepath': temp_filepath,
+                                     'genres': genres}
+
+        return render_template('results.html', melody_file=temp_filepath, analyzer_comparison=analyzer_comparison)
 
 
 @app.route('/analyzer_data.json')
@@ -134,11 +142,21 @@ def show_user_profile(user_id):
     is_current_user = (user.user_id == current_user)
     likes = Like.check_for_likes(melodies, current_user)
 
+    following = {}
+    for user in user.following:
+        last_melody_id = user.find_last_melody()
+        if last_melody_id:
+            last_melody = Melody.query.get(last_melody_id)
+        else:
+            last_melody = None
+        following[user.user_id] = [user, last_melody]
+
     return render_template('user.html',
                            user=user,
                            melodies=melodies,
                            is_current_user=is_current_user,
                            likes=likes,
+                           following=following,
                            )
 
 
@@ -265,6 +283,8 @@ def processes_logout():
     """ """
 
     session['user_id'] = None
+    session['current_melody'] = None
+    session['analyzer_data'] = None
     flash("You've successfully logged out!")
     return redirect('/')
 
@@ -274,7 +294,7 @@ if __name__ == "__main__":
 
     app.debug = True
     connect_to_db(app)
-    DebugToolbarExtension(app)
+    # DebugToolbarExtension(app)
     app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
     app.run(host='0.0.0.0')

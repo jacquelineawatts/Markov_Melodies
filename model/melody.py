@@ -160,17 +160,21 @@ class Melody(db.Model):
 
         while True:
             generated_melody = Melody.generate_new_melody(length - 1, input_notes, genres)
-            melody = Melody.add_ending(generated_melody)
+            if len(generated_melody) <= 2:
+                return None, None, None
 
-            analyzer_comparison, all_probabilities = Analyzer.build_comparison(all_analyzers, melody, mode)
-            high_probs = [prob for prob in all_probabilities if prob > 0.7]
+            else:
+                melody = Melody.add_ending(generated_melody)
 
-            if (max(all_probabilities)) > 0.90 or len(high_probs) > (len(all_probabilities) / 3):
-                print "YAY IT'S A MATCH!"
+                analyzer_comparison, all_probabilities = Analyzer.build_comparison(all_analyzers, melody, mode)
+                high_probs = [prob for prob in all_probabilities if prob > 0.7]
 
-                temp_filepath = 'static/temp.wav'
-                notes_abc_notation = Melody.save_melody_to_wav_file(melody, temp_filepath)
-                break
+                if (max(all_probabilities)) > 0.90 or len(high_probs) > (len(all_probabilities) / 3):
+                    print "YAY IT'S A MATCH!"
+
+                    temp_filepath = 'static/temp.wav'
+                    notes_abc_notation = Melody.save_melody_to_wav_file(melody, temp_filepath)
+                    break
 
             # is_major = Analyzer.predict_mode(melody)
             # print 'PREDICTION OF NEW MELODY: ', is_major, type(is_major)
