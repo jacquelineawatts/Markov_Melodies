@@ -1,3 +1,10 @@
+.navbar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+}
+
 .navbar-brand > img {
     display: inline;
     max-height: 25px
@@ -10,4 +17,10 @@
 canvas {
     width: 400px;
     height: 400px;
+}
+
+.input-form {
+    margin-top: 450px;
+    position: fixed;
+    left: 0;
 }
