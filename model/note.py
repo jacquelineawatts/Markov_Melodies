@@ -21,6 +21,7 @@ class Note(db.Model):
                                                   )
 
     def show_name_with_octave(self):
+        """For a given note object, return as pitch with octave notation."""
 
         return (self.pitch + str(self.octave)).encode('latin-1')
 

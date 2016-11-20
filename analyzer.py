@@ -67,7 +67,7 @@ class Analyzer(object):
         return features
 
     def predict_mode(self, melody):
-        """Given a melody """
+        """Loads pickle for given analyzer, and makes proba prediction for a melody."""
 
         self.load_pickle()
         features = Analyzer.build_features_from_melody(melody)
@@ -76,6 +76,7 @@ class Analyzer(object):
         return probabilities_ndarray
 
     def calculate_probability_of_mode(self, melody, mode):
+        """Returns only prediction probability relevant to our users mode input."""
 
         probabilities_ndarray = self.predict_mode(melody)
         if mode is True:
@@ -87,6 +88,7 @@ class Analyzer(object):
 
     @classmethod
     def build_comparison(cls, all_analyzers, melody, mode):
+        """Crafts analyzer comparison dictionary for all analyzers and outcomes."""
 
         all_probabilities = []
         analyzer_comparison = {"Logistic Regression": {'Notes': None,
@@ -112,6 +114,7 @@ class Analyzer(object):
         return analyzer_comparison, all_probabilities
 
 
+# THIS SHOULD EVENTUALLY BY PART OF DB. FOR NOW SEED DATA UPLOADED EACH TIME APP STARTS.
 lr_notes = Analyzer('Logistic Regression', 'static/pipeline_lr_notes.txt', 'Notes')
 lr_steps = Analyzer('Logistic Regression', 'static/pipeline_lr_steps.txt', 'Steps')
 lr_both = Analyzer('Logistic Regression', 'static/pipeline_lr_both.txt', 'Both')

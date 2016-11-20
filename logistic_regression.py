@@ -35,6 +35,7 @@ import cPickle
 
 
 class ItemSelector(BaseEstimator, TransformerMixin):
+    """Class for selecting values from dictionary in crafting feature vectors."""
 
     def __init__(self, key):
         self.key = key
@@ -84,6 +85,7 @@ def build_feature_corpus(corpus):
 
 
 def build_feature_vector_and_fit_model(features):
+    """Crafts the classifier and vectorizer pipelin and fits to feature vectors."""
 
     pipeline = Pipeline([
         ('features', FeatureUnion(

@@ -29,6 +29,9 @@ class Genre(db.Model):
 
     @classmethod
     def get_genre(cls, genre_name):
+        """Given a genre name, returns a genre object.
+
+        SEE WHERE THIS IS USED, AND POTENTIALLY CALL ADD TO DB IN EXCEPT."""
 
         try:
             genre = Genre.query.filter_by(genre=genre_name).one()

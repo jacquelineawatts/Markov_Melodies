@@ -140,4 +140,4 @@ if __name__ == "__main__":
     db.create_all()
     print "Connected to DB."
 
-    load_markov_chains('Classical', 'bach')
+    # load_markov_chains('Classical', 'bach')

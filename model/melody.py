@@ -71,6 +71,11 @@ class Melody(db.Model):
 
     @classmethod
     def generate_new_melody(cls, length, starter_notes, genres):
+        """Generates a new melody based on user preferences from homepage.
+
+        Given length as int, starter notes as tuple of abc notation strings
+        (i.e 'f#4', 'g4'), and genres as list of strings, outputs markov generated
+        melody as a list of note objects."""
 
         new_melody = []
         # default_duration_id = db.session.query(Duration.duration_id).filter_by(duration=1.0).one()[0]
@@ -95,10 +100,6 @@ class Melody(db.Model):
                 print "Selecting an outcome..."
                 outcome = markov.select_outcome()
                 new_melody.append(outcome)
-                # current_key = (current_key[1], outcome)
-            # Right now, just breaks out of loop if it reaches a key that doesn't have
-            # any corresponding values. When real data is in here, check to see if this
-            # will still be a problem.
             else:
                 break
 
@@ -106,10 +107,9 @@ class Melody(db.Model):
 
     @classmethod
     def add_ending(cls, generated_melody):
-        """Add longer duration ending note to end of generated melody."""
+        """If ending is abrupt, adds longer duration ending note to end of melody."""
 
         end_note = generated_melody[-1]
-        print "END NOTE: ", end_note
         print "END NOTE DURATION: ", end_note.duration.duration
         if end_note.duration.duration < 1.0:
             duration_ids = db.session.query(Duration.duration_id).filter(Duration.duration >= 1.0).all()
@@ -126,7 +126,7 @@ class Melody(db.Model):
             generated_melody.append(new_end)
         else:
             pass
-        # new_end = current_end
+
         return generated_melody
 
     @classmethod
@@ -145,7 +145,6 @@ class Melody(db.Model):
                     note_for_ps = note.pitch.lower()
                 notes_abc += ((note_for_ps + str(note.octave), Duration.convert_duration_db_to_abc(float(note.duration.duration))),)
 
-            # Still need to implement handling of rests
             else:
                 pass
 
@@ -157,6 +156,11 @@ class Melody(db.Model):
 
     @classmethod
     def make_melody(cls, length, input_notes, genres, mode):
+        """Controller for melody generating activities.
+
+        Initiates generation of a new melody, check if suitable length, adds ending,
+        compares outcome to mode requested by user, regenerates if needed. When fits
+        the criteria, saves to .wav file and composes analyzer comparison dictionary."""
 
         while True:
             generated_melody = Melody.generate_new_melody(length - 1, input_notes, genres)

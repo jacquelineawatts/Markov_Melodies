@@ -31,6 +31,7 @@ class User(db.Model):
 
     @classmethod
     def add_user_to_db(cls, email, password, first_name, last_name, profile_img):
+        """Adds new user instance to the db."""
 
         user = User(email=email,
                     password=password,
@@ -45,6 +46,7 @@ class User(db.Model):
         return user
 
     def find_last_melody(self):
+        """For a given user, finds their most recently added melody."""
 
         melody_ids = [melody.melody_id for melody in self.melodies]
         if melody_ids:

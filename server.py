@@ -32,6 +32,8 @@ STATIC_DIRECTORY = os.path.join(BASE_DIRECTORY, 'static')
 UPLOAD_DIRECTORY = os.path.join(STATIC_DIRECTORY, 'images')
 
 
+# ---------------------------------- HOMEPAGE ----------------------------------
+
 @app.route('/')
 def index():
     """Shows homepage. """
@@ -43,25 +45,12 @@ def index():
     return render_template('index.html', notes=notes)
 
 
-@app.route('/add_melody', methods=['POST'])
-def adds_melody():
-    """Adds a new melody to db."""
-
-    user_id = session['user_id']
-    title = request.form.get('title').encode('latin-1')
-    current_melody = session['current_melody']
-
-    melody = Melody.add_melody_to_db(user_id, title, current_melody)
-    flash("You've successfully added a melody to your account.")
-
-    return redirect('/user/{}'.format(user_id))
-
-
 # @app.route('/testing')
 # def test():
 #     time.sleep(5)
 #     return str(request.args)
 
+# ------------------------------ RESULTS PAGE ----------------------------------
 
 @app.route('/results', methods=['POST'])
 def show_results():
@@ -91,6 +80,7 @@ def show_results():
 
 @app.route('/analyzer_data.json')
 def construct_chart_data():
+    """Constructs data for ChartJS viz of ML classifier outcomes on results page."""
 
     analyzer_comparison = session['analyzer_data']
 
@@ -121,9 +111,25 @@ def construct_chart_data():
     return jsonify(chart_data)
 
 
+@app.route('/add_melody', methods=['POST'])
+def adds_melody():
+    """Instantiates new melody associated with current user."""
+
+    user_id = session['user_id']
+    title = request.form.get('title').encode('latin-1')
+    current_melody = session['current_melody']
+
+    melody = Melody.add_melody_to_db(user_id, title, current_melody)
+    flash("You've successfully added a melody to your account.")
+
+    return redirect('/user/{}'.format(user_id))
+
+
+# ----------------------------- USER PROFILES ----------------------------------
+
 @app.route('/users')
 def show_all_users():
-    """Display all users."""
+    """Displays all users."""
 
     current_user = User.query.get(session['user_id'])
     all_users = User.query.filter(User.user_id != current_user.user_id).all()
@@ -159,10 +165,11 @@ def show_user_profile(user_id):
                            following=following,
                            )
 
+# ------------------------ FOLLOWING/UNFOLLOWING A USER ------------------------
 
 @app.route('/follow_user/<user_id>')
 def add_connection(user_id):
-    """Create new follower-following connection."""
+    """Creates new follower-following connection."""
 
     follower_user_id = session['user_id']
     following_user_id = user_id
@@ -174,6 +181,7 @@ def add_connection(user_id):
 
 @app.route('/unfollow/<user_id>')
 def delete_connection(user_id):
+    """Deletes a follower-following connection."""
 
     follower_user_id = session['user_id']
     following_user_id = user_id
@@ -182,9 +190,11 @@ def delete_connection(user_id):
 
     return redirect('/users')
 
+# ------------------------- ADDING/DELETING LIKES ------------------------------
 
 @app.route('/add_like/<melody_id>')
 def add_like_to_melody(melody_id):
+    """Creates a new like associated with a user and another users melody. """
 
     melody = Melody.query.get(melody_id)
     melody_user_id = melody.user.user_id
@@ -196,6 +206,7 @@ def add_like_to_melody(melody_id):
 
 @app.route('/unlike/<melody_id>')
 def delete_like_from_melody(melody_id):
+    """Deletes a like. """
 
     melody = Melody.query.get(melody_id)
     melody_user_id = melody.user.user_id
@@ -210,12 +221,14 @@ def delete_like_from_melody(melody_id):
 
 @app.route('/signup', methods=['GET'])
 def get_signup_form():
+    """Displays signup page for a new user."""
 
     return render_template('signup.html')
 
 
 @app.route('/signup', methods=['POST'])
 def process_signup():
+    """Processes signup page form input to add a new user to the db. """
 
     email = request.form.get('email')
     password = request.form.get('password')
@@ -243,12 +256,14 @@ def process_signup():
 
 @app.route('/login', methods=['GET'])
 def shows_login():
+    """Displays login page for an existing user."""
 
     return render_template('login.html')
 
 
 @app.route('/login', methods=['POST'])
 def process_login():
+    """Processes login form input to validate a user login."""
 
     email = request.form.get('email')
     password = request.form.get('password')
@@ -280,7 +295,7 @@ def process_login():
 
 @app.route('/logout')
 def processes_logout():
-    """ """
+    """Processes a user logging out and resets any associated session keys."""
 
     session['user_id'] = None
     session['current_melody'] = None

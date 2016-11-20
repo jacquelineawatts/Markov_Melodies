@@ -28,6 +28,10 @@ class Markov(db.Model):
                                                          )
 
     def select_outcome(self):
+        """For a given Markov key object, selects an outcome based on weights.
+
+        Uses numpy random module in order to pass probabilities in addition to
+        potential outcomes. Outputs a random note object."""
 
         # Switch this to a dictionary instead of two parallel lists?
         potential_outcomes = [(outcome, outcome.weight) for outcome in self.outcomes]
@@ -43,7 +47,7 @@ class Markov(db.Model):
 
     @classmethod
     def add_markov_to_db(cls, first_note_id, second_note_id, genre_id):
-        """Adds new markov chain key to the db. """
+        """Adds new markov chain key to the db."""
 
         markov = Markov(first_note_id=first_note_id,
                         second_note_id=second_note_id,
@@ -83,6 +87,7 @@ class Markov(db.Model):
 
     @classmethod
     def get_markov(cls, first_note, second_note, genre_ids):
+        """FIND WERE THIS IS USED, AND REPLACE IT WITH BELOW!"""
 
         markov = Markov.query.filter((Markov.first_note_id == first_note.note_id) &
                                      (Markov.second_note_id == second_note.note_id) &
@@ -92,6 +97,10 @@ class Markov(db.Model):
 
     @classmethod
     def get_markov_by_tuple(cls, notes_tuple, genres):
+        """Given note objects as a tuple, and given multiple genre obj, returns markov obj.
+
+        For instance where no Markov obj fits the criteria, finds a related obj
+        using find_related_markov."""
 
         print 'NOTES TUPLE:', notes_tuple
         first_note = notes_tuple[0]
