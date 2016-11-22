@@ -1,16 +1,16 @@
 {% extends 'base.html' %}
 
 {% block head %}
+
+
 <link rel="stylesheet" type="text/css" href="static/component.css" />
 <script src="static/modernizr.custom.js"></script>
   
   <script src="https://www.google.com/jsapi?key=ABQIAAAAM5WRXPMrqYvX6b4Xb7EZpxSeEWdgYc2hJ2roZCm3pKElCbTU5BSm-LvChjUku9yw6i8tI0Srj_P91w" type="text/javascript"></script>
-  <script type="text/javascript">
-    google.load("jquery", "1.5.0");
-    </script>
-  <script src="static/jquery.hotkeys.js"></script>
-  <script src="static/keyObjects.js"></script>
+  <!--<script src="static/jquery.hotkeys.js"></script>-->
+  <!--<script src="static/keyObjects.js"></script>-->
   <script src="static/piano.js"></script>
+
 
 {% endblock %}
 {% block title %} Homepage {% endblock %}
@@ -24,137 +24,139 @@
   </svg>
 </div>
 
+
 <!-- main container -->
+<div id="full-page">
 <div id="piano">
-    <div id="pianoBody">
+    <div id="pianoBody">    
         <div id="littleRedLine"></div>
         <div id="o00" class="octave">
-            <div id="00A" class="key white"><div class="keyname">A</div></div>
-            <div id="00B" class="key white"><div class="keyname">B</div></div>
+            <div id="00A" class="key white"><div class="keyname"></div></div>
+            <div id="00B" class="key white"><div class="keyname"></div></div>
             <div class="flats">
-                <div id="00As" class="key black"><div class="keyname">A# == Bb</div></div>
+                <div id="00As" class="key black"><div class="keyname"></div></div>
             </div>
         </div>
         <div id="o0" class="octave">
-            <div id="0C" class="key white" ><div class="keyname">C</div><div class="oN">1</div></div>
-            <div id="0D" class="key white"><div class="keyname">D</div></div>
-            <div id="0E" class="key white"><div class="keyname">E</div></div>
-            <div id="0F" class="key white"><div class="keyname">F</div></div>
-            <div id="0G" class="key white"><div class="keyname">G</div></div>
-            <div id="0A" class="key white"><div class="keyname">A</div></div>
-            <div id="0B" class="key white"><div class="keyname">B</div></div>
+            <div id="0C" class="key white" ><div class="keyname"></div><div class="oN">1</div></div>
+            <div id="0D" class="key white"><div class="keyname"></div></div>
+            <div id="0E" class="key white"><div class="keyname"></div></div>
+            <div id="0F" class="key white"><div class="keyname"></div></div>
+            <div id="0G" class="key white"><div class="keyname"></div></div>
+            <div id="0A" class="key white"><div class="keyname"></div></div>
+            <div id="0B" class="key white"><div class="keyname"></div></div>
             <div class="flats">
-                <div id="0Cs" class="key black"><div class="keyname">C# == Db</div></div>
-                <div id="0Ds" class="key black"><div class="keyname">D# == Eb</div></div>
-                <div id="0Fs" class="key black"><div class="keyname">F# == Gb</div></div>
-                <div id="0Gs" class="key black"><div class="keyname">G# == Ab</div></div>
-                <div id="0As" class="key black"><div class="keyname">A# == Bb</div></div>
+                <div id="0Cs" class="key black"><div class="keyname"></div></div>
+                <div id="0Ds" class="key black"><div class="keyname"></div></div>
+                <div id="0Fs" class="key black"><div class="keyname"></div></div>
+                <div id="0Gs" class="key black"><div class="keyname"></div></div>
+                <div id="0As" class="key black"><div class="keyname"></div></div>
             </div>
         </div>
         <div id="o1" class="octave">
-            <div id="1C" class="key white" ><div class="keyname">C</div><div class="oN">2</div></div>
-            <div id="1D" class="key white"><div class="keyname">D</div></div>
-            <div id="1E" class="key white"><div class="keyname">E</div></div>
-            <div id="1F" class="key white"><div class="keyname">F</div></div>
-            <div id="1G" class="key white"><div class="keyname">G</div></div>
-            <div id="1A" class="key white"><div class="keyname">A</div></div>
-            <div id="1B" class="key white"><div class="keyname">B</div></div>
+            <div id="1C" class="key white" ><div class="keyname"></div><div class="oN">2</div></div>
+            <div id="1D" class="key white"><div class="keyname"></div></div>
+            <div id="1E" class="key white"><div class="keyname"></div></div>
+            <div id="1F" class="key white"><div class="keyname"></div></div>
+            <div id="1G" class="key white"><div class="keyname"></div></div>
+            <div id="1A" class="key white"><div class="keyname"></div></div>
+            <div id="1B" class="key white"><div class="keyname"></div></div>
             <div class="flats">
-                <div id="1Cs" class="key black"><div class="keyname">C# == Db</div></div>
-                <div id="1Ds" class="key black"><div class="keyname">D# == Eb</div></div>
-                <div id="1Fs" class="key black"><div class="keyname">F# == Gb</div></div>
-                <div id="1Gs" class="key black"><div class="keyname">G# == Ab</div></div>
-                <div id="1As" class="key black"><div class="keyname">A# == Bb</div></div>
+                <div id="1Cs" class="key black"><div class="keyname"></div></div>
+                <div id="1Ds" class="key black"><div class="keyname"></div></div>
+                <div id="1Fs" class="key black"><div class="keyname"></div></div>
+                <div id="1Gs" class="key black"><div class="keyname"></div></div>
+                <div id="1As" class="key black"><div class="keyname"></div></div>
             </div>
         </div>
         <div id="o2" class="octave">
-            <div id="2C" class="key white" ><div class="keyname">C</div><div class="oN">3</div></div>
-            <div id="2D" class="key white"><div class="keyname">D</div></div>
-            <div id="2E" class="key white"><div class="keyname">E</div></div>
-            <div id="2F" class="key white"><div class="keyname">F</div></div>
-            <div id="2G" class="key white"><div class="keyname">G</div></div>
-            <div id="2A" class="key white"><div class="keyname">A</div></div>
-            <div id="2B" class="key white"><div class="keyname">B</div></div>
+            <div id="2C" class="key white" ><div class="keyname"></div><div class="oN">3</div></div>
+            <div id="2D" class="key white"><div class="keyname"></div></div>
+            <div id="2E" class="key white"><div class="keyname"></div></div>
+            <div id="2F" class="key white"><div class="keyname"></div></div>
+            <div id="2G" class="key white"><div class="keyname"></div></div>
+            <div id="2A" class="key white"><div class="keyname"></div></div>
+            <div id="2B" class="key white"><div class="keyname"></div></div>
             <div class="flats">
-                <div id="2Cs" class="key black"><div class="keyname">C# == Db</div></div>
-                <div id="2Ds" class="key black"><div class="keyname">D# == Eb</div></div>
-                <div id="2Fs" class="key black"><div class="keyname">F# == Gb</div></div>
-                <div id="2Gs" class="key black"><div class="keyname">G# == Ab</div></div>
-                <div id="2As" class="key black"><div class="keyname">A# == Bb</div></div>
+                <div id="2Cs" class="key black"><div class="keyname"></div></div>
+                <div id="2Ds" class="key black"><div class="keyname"></div></div>
+                <div id="2Fs" class="key black"><div class="keyname"></div></div>
+                <div id="2Gs" class="key black"><div class="keyname"></div></div>
+                <div id="2As" class="key black"><div class="keyname"></div></div>
             </div>
         </div>
         <div id="o3" class="octave">
             <a id="middleC"></a>
-            <div id="3C" class="key white" ><div class="keyname">C</div><div class="oN">4</div></div>
-            <div id="3D" class="key white"><div class="keyname">D</div></div>
-            <div id="3E" class="key white"><div class="keyname">E</div></div>
-            <div id="3F" class="key white"><div class="keyname">F</div></div>
-            <div id="3G" class="key white"><div class="keyname">G</div></div>
-            <div id="3A" class="key white"><div class="keyname">A</div></div>
-            <div id="3B" class="key white"><div class="keyname">B</div></div>
+            <div id="3C" class="key white" ><div class="keyname"></div><div class="oN">4</div></div>
+            <div id="3D" class="key white"><div class="keyname"></div></div>
+            <div id="3E" class="key white"><div class="keyname"></div></div>
+            <div id="3F" class="key white"><div class="keyname"></div></div>
+            <div id="3G" class="key white"><div class="keyname"></div></div>
+            <div id="3A" class="key white"><div class="keyname"></div></div>
+            <div id="3B" class="key white"><div class="keyname"></div></div>
             <div class="flats">
-                <div id="3Cs" class="key black"><div class="keyname">C# == Db</div></div>
-                <div id="3Ds" class="key black"><div class="keyname">D# == Eb</div></div>
-                <div id="3Fs" class="key black"><div class="keyname">F# == Gb</div></div>
-                <div id="3Gs" class="key black"><div class="keyname">G# == Ab</div></div>
-                <div id="3As" class="key black"><div class="keyname">A# == Bb</div></div>
+                <div id="3Cs" class="key black"><div class="keyname"></div></div>
+                <div id="3Ds" class="key black"><div class="keyname"></div></div>
+                <div id="3Fs" class="key black"><div class="keyname"></div></div>
+                <div id="3Gs" class="key black"><div class="keyname"></div></div>
+                <div id="3As" class="key black"><div class="keyname"></div></div>
             </div>
         </div>
         <div id="o4" class="octave">
-            <div id="4C" class="key white" ><div class="keyname">C</div><div class="oN">5</div></div>
-            <div id="4D" class="key white"><div class="keyname">D</div></div>
-            <div id="4E" class="key white"><div class="keyname">E</div></div>
-            <div id="4F" class="key white"><div class="keyname">F</div></div>
-            <div id="4G" class="key white"><div class="keyname">G</div></div>
-            <div id="4A" class="key white"><div class="keyname">A</div></div>
-            <div id="4B" class="key white"><div class="keyname">B</div></div>
+            <div id="4C" class="key white" ><div class="keyname"></div><div class="oN">5</div></div>
+            <div id="4D" class="key white"><div class="keyname"></div></div>
+            <div id="4E" class="key white"><div class="keyname"></div></div>
+            <div id="4F" class="key white"><div class="keyname"></div></div>
+            <div id="4G" class="key white"><div class="keyname"></div></div>
+            <div id="4A" class="key white"><div class="keyname"></div></div>
+            <div id="4B" class="key white"><div class="keyname"></div></div>
             <div class="flats">
-                <div id="4Cs" class="key black"><div class="keyname">C# == Db</div></div>
-                <div id="4Ds" class="key black"><div class="keyname">D# == Eb</div></div>
-                <div id="4Fs" class="key black"><div class="keyname">F# == Gb</div></div>
-                <div id="4Gs" class="key black"><div class="keyname">G# == Ab</div></div>
-                <div id="4As" class="key black"><div class="keyname">A# == Bb</div></div>
+                <div id="4Cs" class="key black"><div class="keyname"></div></div>
+                <div id="4Ds" class="key black"><div class="keyname"></div></div>
+                <div id="4Fs" class="key black"><div class="keyname"></div></div>
+                <div id="4Gs" class="key black"><div class="keyname"></div></div>
+                <div id="4As" class="key black"><div class="keyname"></div></div>
             </div>
         </div>
         <div id="o5" class="octave">
-            <div id="5C" class="key white" ><div class="keyname">C</div><div class="oN">6</div></div>
-            <div id="5D" class="key white"><div class="keyname">D</div></div>
-            <div id="5E" class="key white"><div class="keyname">E</div></div>
-            <div id="5F" class="key white"><div class="keyname">F</div></div>
-            <div id="5G" class="key white"><div class="keyname">G</div></div>
-            <div id="5A" class="key white"><div class="keyname">A</div></div>
-            <div id="5B" class="key white"><div class="keyname">B</div></div>
+            <div id="5C" class="key white" ><div class="keyname"></div><div class="oN">6</div></div>
+            <div id="5D" class="key white"><div class="keyname"></div></div>
+            <div id="5E" class="key white"><div class="keyname"></div></div>
+            <div id="5F" class="key white"><div class="keyname"></div></div>
+            <div id="5G" class="key white"><div class="keyname"></div></div>
+            <div id="5A" class="key white"><div class="keyname"></div></div>
+            <div id="5B" class="key white"><div class="keyname"></div></div>
             <div class="flats">
-                <div id="5Cs" class="key black"><div class="keyname">C# == Db</div></div>
-                <div id="5Ds" class="key black"><div class="keyname">D# == Eb</div></div>
-                <div id="5Fs" class="key black"><div class="keyname">F# == Gb</div></div>
-                <div id="5Gs" class="key black"><div class="keyname">G# == Ab</div></div>
-                <div id="5As" class="key black"><div class="keyname">A# == Bb</div></div>
+                <div id="5Cs" class="key black"><div class="keyname"></div></div>
+                <div id="5Ds" class="key black"><div class="keyname"></div></div>
+                <div id="5Fs" class="key black"><div class="keyname"></div></div>
+                <div id="5Gs" class="key black"><div class="keyname"></div></div>
+                <div id="5As" class="key black"><div class="keyname"></div></div>
             </div>
         </div>
         <div id="o6" class="octave">
-            <div id="6C" class="key white" ><div class="keyname">C</div><div class="oN">7</div></div>
-            <div id="6D" class="key white"><div class="keyname">D</div></div>
-            <div id="6E" class="key white"><div class="keyname">E</div></div>
-            <div id="6F" class="key white"><div class="keyname">F</div></div>
-            <div id="6G" class="key white"><div class="keyname">G</div></div>
-            <div id="6A" class="key white"><div class="keyname">A</div></div>
-            <div id="6B" class="key white"><div class="keyname">B</div></div>
+            <div id="6C" class="key white" ><div class="keyname"></div><div class="oN">7</div></div>
+            <div id="6D" class="key white"><div class="keyname"></div></div>
+            <div id="6E" class="key white"><div class="keyname"></div></div>
+            <div id="6F" class="key white"><div class="keyname"></div></div>
+            <div id="6G" class="key white"><div class="keyname"></div></div>
+            <div id="6A" class="key white"><div class="keyname"></div></div>
+            <div id="6B" class="key white"><div class="keyname"></div></div>
             <div class="flats">
-                <div id="6Cs" class="key black"><div class="keyname">C# == Db</div></div>
-                <div id="6Ds" class="key black"><div class="keyname">D# == Eb</div></div>
-                <div id="6Fs" class="key black"><div class="keyname">F# == Gb</div></div>
-                <div id="6Gs" class="key black"><div class="keyname">G# == Ab</div></div>
-                <div id="6As" class="key black"><div class="keyname">A# == Bb</div></div>
+                <div id="6Cs" class="key black"><div class="keyname"></div></div>
+                <div id="6Ds" class="key black"><div class="keyname"></div></div>
+                <div id="6Fs" class="key black"><div class="keyname"></div></div>
+                <div id="6Gs" class="key black"><div class="keyname"></div></div>
+                <div id="6As" class="key black"><div class="keyname"></div></div>
             </div>
         </div>
         <div id="o7" class="octave">
-            <div id="7C" class="key white"><div class="keyname">C</div><div class="oN">8</div></div>
+            <div id="7C" class="key white"><div class="keyname"></div><div class="oN">8</div></div>
         </div>
     </div>
 </div>
 <!-- AudioFiles Section -->
-<div id="pianoStrings">
+<!-- <div id="pianoStrings">
     <audio id="tone-00A" preload="auto" controls>
         <source src="http://h5p.hit.bg/grand-piano/00A.ogg" type="audio/ogg"></source>
         <source src="http://h5p.hit.bg/grand-piano/00A.mp3" type="audio/mpeg"></source>
@@ -508,17 +510,12 @@
         <source src="http://h5p.hit.bg/grand-piano/7C.mp3" type="audio/mpeg"></source>
     </audio>
 </div>
-
-<div class="container input-form">
-
-<!--     <h3>Welcome to Markov's Melodies</h3>
-    <h5>How it works: </h5>
-    <p>Markov Melodies is a music composition app which asks users to provide a small amount of seed information (a few starter notes, preference for major vs. minor, length) to allow the app to generate a brand new melody for them. Users can sign up and log in to a profile to save and share their melodies, or they may choose to use the app as a guest user.</p>
  -->
+<div class="container homepage-form">
     <div id="la-buttons" class="column">
-        <form id='markov' action='/results' method='POST'>
+        <form id='melodyForm' name='melody' action='/results' method='POST'>
 
-<!--             <label for="note1">First Note: </label>
+            <label for="note1">First Note: </label>
                 <select name="note1">
                     {% for note in notes %}
                         <option value="{{ note }}">{{ note }}</option>
@@ -531,7 +528,7 @@
                         <option value="{{ note }}">{{ note }}</option>
                     {% endfor %}
                 </select>
- -->
+
 
             <label for="length">Length of Output Melody: </label>
             <input type="number" name="length">
@@ -553,77 +550,16 @@
         </form>
     </div>
 </div>
-
+</div>
 <script src="static/classie.js"></script>
+<script src="static/loading-animation.js"></script>
 <script>
-    var loader = document.getElementById('la-anim-6-loader')
-        , border = document.getElementById('la-anim-6-border')
-        , α = 0
-        , π = Math.PI
-        , t = 20
-        
-        , tdraw;
-
-    function PieDraw() {
-        α++;
-        α %= 360;
-        var r = ( α * π / 180 )
-        , x = Math.sin( r ) * 250
-        , y = Math.cos( r ) * - 250
-        , mid = ( α > 180 ) ? 1 : 0
-        , anim = 'M 0 0 v -250 A 250 250 1 ' 
-               + mid + ' 1 ' 
-               +  x  + ' ' 
-               +  y  + ' z';
-
-        loader.setAttribute( 'd', anim );
-        border.setAttribute( 'd', anim );
-        if( α != 0 )
-        tdraw = setTimeout(PieDraw, t); // Redraw
-    }
-
-    function PieReset() {
-        clearTimeout(tdraw);
-        var anim = 'M 0 0 v -250 A 250 250 1 0 1 0 -250 z';
-        loader.setAttribute( 'd', anim );
-        border.setAttribute( 'd', anim );
-    }
-
-    var inProgress = false;
-
-    Array.prototype.slice.call( document.querySelectorAll( '#la-buttons > .formSubmit' ) ).forEach( function( el, i ) {
-        var anim = el.getAttribute( 'data-anim' ),
-            animEl = document.querySelector( '.' + anim );
-
-        el.addEventListener( 'click', function() {
-            if( inProgress ) return false;
-            inProgress = true;
-            classie.add( animEl, 'la-animate' );
-
-            if( anim === 'la-anim-6' ) {
-                PieDraw();
-            }
-
-            setTimeout( function() {
-                classie.remove( animEl, 'la-animate' );
-                
-                if( anim === 'la-anim-6' ) {
-                    PieReset();
-                }
-                
-                inProgress = false;
-            }, 6000 );
-        } );
-    } );
-</script>
-<!-- 
-<script>
-    $('#markov').on('submit', function(evt) {
-        evt.preventDefault();
-        data = $('#markov').serialize();
-        window.location.href = '/testing?' + data;
+    $('#melodyForm').on('submit', function(evt) {
+        $("#full-page").empty()
+        // evt.preventDefault();
+        // data = $('#markov').serialize();
+        // window.location.href = '/testing?' + data;
         });
 </script>
 
- -->
  {% endblock %}

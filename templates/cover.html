@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="/static/main.css">
+
+    <!-- <script src="https://code.jquery.com/jquery.js"></script> -->
+    <script src="https://code.jquery.com/jquery.js"></script>
+    <script src="https://cdn.jsdelivr.net/jquery/1.12.4/jquery.min.js"></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.15.0/jquery.validate.min.js"></script>-->
+
+    <script src="static/jquery.validate.min.js"></script>
+    <script src="static/facebook_oauth.js"></script>
+   
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src=
+  "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.1/Chart.js"></script>
+
+
+      <title>Cover Page</title>
+</head>
+
+<body>
+{% with messages = get_flashed_messages() %}
+  {% for message in messages %}
+      <div class="flash-msg">{{ message }}</div>
+  {% endfor %}
+{% endwith %}
+
+<div class="cover-page">
+    <center>
+    <h2>hello.</h2>
+    <p>Markov Melodies is a music composition app which asks users to provide a small amount of seed information (a few starter notes, preference for major vs. minor, length) to allow the app to generate a brand new melody for them. Users can sign up and log in to a profile to save and share their melodies, or they may choose to use the app as a guest user.</p>
+    <br>
+    <button class="btn btn-primary" data-toggle="modal" data-target="#loginModal">Login</button>
+    <button class="btn btn-primary" data-toggle="modal" data-target="#signupModal"> Sign Up</button>
+    <a class="btn btn-primary" href="/melody" role="button">Continue as a Guest</a>
+    </center>
+</div>
+
+
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="loginModalLabel">Login</h4>
+          </div>
+          <div class="modal-body">
+            <form action='/login' method='POST' id="loginForm">
+                <label for='email'>Email: </label><input type='email' name='email'><br>
+                <label for='password'>Password: </label><input type='password' name='password'><br>
+                <input type='submit' name='submit' value='Submit'>
+                <div class="modal-footer">
+                    <p>Or login using Facebook: </p>
+                    <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+                    </fb:login-button>
+                    <div id="status">
+                    </div>
+                </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Signup Modal -->
+    <div class="modal fade" id="signupModal" tabindex="-1" role="dialog" aria-labelledby="signupModalLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="signupModalLabel">Sign Up</h4>
+          </div>
+          <div class="modal-body">
+            <form action='/signup' method='POST' id="signupForm">
+                <label for='first_name'>First Name: </label><input type='first_name' name='first_name'><br>
+                <label for='last_name'>Last Name: </label><input type='last_name' name='last_name'><br>
+                <label for='email'>Email: </label><input type='email' name='email'><br>
+                <label for='password'>Password: </label><input type='password' name='password'><br>
+                <input type='submit' name='submit' value='Submit'>
+                <div class="modal-footer">
+                    <p>Or sign up using Facebook: </p>
+                    <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+                    </fb:login-button>
+                    <div id="status">
+                    </div>
+                </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+<script src="static/form-validation.js"></script>
+</body>
+</html>
