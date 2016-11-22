@@ -32,10 +32,16 @@ STATIC_DIRECTORY = os.path.join(BASE_DIRECTORY, 'static')
 UPLOAD_DIRECTORY = os.path.join(STATIC_DIRECTORY, 'images')
 
 
-# ---------------------------------- HOMEPAGE ----------------------------------
+# ------------------------------ COVER + HOMEPAGE ------------------------------
 
 @app.route('/')
-def index():
+def show_cover_page():
+
+    return render_template('cover.html')
+
+
+@app.route('/melody')
+def make_melody():
     """Shows homepage. """
 
     notes = Note.get_all_notes()
@@ -44,6 +50,11 @@ def index():
 
     return render_template('index.html', notes=notes)
 
+
+# @app.route('/fb_tester')
+# def test_fb_login():
+
+#     return render_template('fb_tester.html')
 
 # @app.route('/testing')
 # def test():
@@ -66,7 +77,7 @@ def show_results():
 
     if temp_filepath is None:
         flash("I'm sorry, there's no melody for that combination of seed notes. Please start over.")
-        return redirect('/')
+        return redirect('/melody')
 
     else:
         session['analyzer_data'] = analyzer_comparison
@@ -241,7 +252,7 @@ def process_signup():
     if email in emails:
         flash("You already have an account. Please sign in.")
         session['img_upload_filepath'] = None
-        return redirect('/login')
+        return redirect('/#login')
 
     else:
         user = User.add_user_to_db(email, password, first_name, last_name, profile_img)
@@ -249,7 +260,8 @@ def process_signup():
         session['user_id'] = user.user_id
         session['img_upload_filepath'] = None
 
-        return redirect('/user/{}'.format(user.user_id))
+        return redirect('/melody')
+        # return redirect('/user/{}'.format(user.user_id))
 
 # ------------------------------- LOGGING IN/OUT -------------------------------
 
@@ -282,7 +294,8 @@ def process_login():
         if user.password == password:
             flash("You've successfully logged in!")
             session['user_id'] = user.user_id
-            return redirect('/user/{}'.format(user.user_id))
+            # return redirect('/user/{}'.format(user.user_id))
+            return redirect('/melody')
         else:
             flash("I'm sorry that password is incorrect. Please try again.")
             return redirect('/login')
@@ -303,13 +316,58 @@ def processes_logout():
     flash("You've successfully logged out!")
     return redirect('/')
 
+# ------------------------------- OAUTH HANDLING -------------------------------
+
+
+@app.route('/post_oauth', methods=['POST'])
+def get_oauth_data():
+
+    first_name = request.form['first_name']
+    last_name = request.form['last_name']
+    email = request.form['email']
+    profile_img = request.form['profile_img']
+    password = 'test'
+
+    print 'USER INFO: ', first_name, last_name, email, profile_img
+
+    user_query = User.query.filter_by(email=email)
+
+    try:
+        user = user_query.one()
+    except NoResultFound:
+        user = User.add_user_to_db(email, password, first_name, last_name)
+
+    except MultipleResultsFound:
+        print "Multiple user instances found for this email in db."
+        user = user_query.first()
+
+    if user:
+        # WHY ISNT THIS SETTING THE USER ID VAR??, it prints!
+        session['user_id'] = user.user_id
+        print "USER ID: ", session['user_id']
+
+    return redirect('/melody')
+
+    emails = db.session.query(User.email).all()
+    if email in emails:
+        current_user_id = db.session.query(User.user_id).filter_by(email=email).one()
+        session['user_id'] = current_user_id
+        return redirect('/melody')
+
+    else:
+        user = User.add_user_to_db(email, password, first_name, last_name, profile_img)
+        flash("Thank you for signing up for an account.")
+        session['user_id'] = user.user_id
+        session['img_upload_filepath'] = None
+
+        return redirect('/melody')
 
 # ------------------------------ STARTING SERVER -------------------------------
 if __name__ == "__main__":
 
     app.debug = True
     connect_to_db(app)
-    # DebugToolbarExtension(app)
+    DebugToolbarExtension(app)
     app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
     app.run(host='0.0.0.0')
