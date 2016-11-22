@@ -105,6 +105,7 @@ class Analyzer(object):
                                                                  },
                                }
 
+        print "Beginning to iterate over analyzers..."
         for analyzer in all_analyzers:
             probability = analyzer.calculate_probability_of_mode(melody, mode)
             analyzer_comparison[analyzer.name][analyzer.features] = probability

@@ -60,15 +60,16 @@ class Markov(db.Model):
         return markov
 
     @classmethod
-    def find_related_markov(cls, first_note, second_note, genre_ids):
+    def find_related_markov_by_duration(cls, first_note, second_note, genre_ids):
         """Finds a related markov key if get_markov_by_tuple query returns empty."""
 
         print "FINDING A NEW MARKOV...."
         i = 0
         for note in [first_note, second_note]:
+            print "Starting w/note #", i + 1
             potential_replacements = Note.query.filter_by(pitch=note.pitch,
                                                           octave=note.octave).all()
-
+            print "There are {} potential replacements.".format(len(potential_replacements))
             for note in potential_replacements:
                 if i == 0:
                     markov = Markov.get_markov(note, second_note, genre_ids)
@@ -84,6 +85,33 @@ class Markov(db.Model):
 
         if not markov:
             return False
+
+    @classmethod
+    def find_related_markov_by_pitch(cls, first_note, second_note, genre_ids):
+        """Finds a related markov key if get_markov_by_tuple query returns empty."""
+
+        print "STILL FINDING A NEW MARKOV...."
+        i = 0
+        for note in [first_note, second_note]:
+            print "Starting w/note #", i + 1
+            potential_replacements = Note.query.filter_by(pitch=note.pitch[:-1],
+                                                          octave=note.octave,
+                                                          duration_id=note.duration_id).all()
+            print "There are {} potential replacements.".format(len(potential_replacements))
+            for note in potential_replacements:
+                if i == 0:
+                    markov = Markov.get_markov(note, second_note, genre_ids)
+                else:
+                    markov = Markov.get_markov(first_note, note, genre_ids)
+
+                if markov:
+                    print "MARKOV FOUND!!"
+                    return markov
+                else:
+                    continue
+            i += 1
+
+        return False
 
     @classmethod
     def get_markov(cls, first_note, second_note, genre_ids):
@@ -104,11 +132,8 @@ class Markov(db.Model):
 
         print 'NOTES TUPLE:', notes_tuple
         first_note = notes_tuple[0]
-        print 'FIRST NOTE:', first_note
         second_note = notes_tuple[1]
-        print 'SECOND NOTE:', second_note
         genre_ids = [Genre.get_genre(genre).genre_id for genre in genres]
-        print 'GENRE IDS:', genre_ids
 
         markov = Markov.query.filter((Markov.first_note_id == first_note.note_id) &
                                      (Markov.second_note_id == second_note.note_id) &
@@ -118,7 +143,9 @@ class Markov(db.Model):
 
         except NoResultFound:
             print "No Markov key for that tuple."
-            markov = Markov.find_related_markov(first_note, second_note, genre_ids)
+            markov = Markov.find_related_markov_by_duration(first_note, second_note, genre_ids)
+            if not markov:
+                markov = Markov.find_related_markov_by_pitch(first_note, second_note, genre_ids)
 
         except MultipleResultsFound:
             print "Mult Markov keys found for that tuple."

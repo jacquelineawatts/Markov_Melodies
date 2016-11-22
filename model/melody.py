@@ -8,6 +8,7 @@ from note import Note, Duration
 from markov import Markov
 from analyzer import Analyzer, all_analyzers
 import cPickle
+import timeit
 from logistic_regression import ItemSelector, predict
 from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -121,7 +122,7 @@ class Melody(db.Model):
             except NoResultFound:
                 note = end_note.pitch + str(end_note.octave)
                 note_music21_obj = music21.note.Note(note)
-                new_end = Note.add_note_to_db(note_music21_obj, 1.0)
+                new_end = Note.add_note_to_db(note_music21_obj, 4.0)
 
             generated_melody.append(new_end)
         else:
@@ -162,6 +163,7 @@ class Melody(db.Model):
         compares outcome to mode requested by user, regenerates if needed. When fits
         the criteria, saves to .wav file and composes analyzer comparison dictionary."""
 
+        start_time = timeit.default_timer()
         while True:
             generated_melody = Melody.generate_new_melody(length - 1, input_notes, genres)
             if len(generated_melody) <= 2:
@@ -170,8 +172,10 @@ class Melody(db.Model):
             else:
                 melody = Melody.add_ending(generated_melody)
 
+                print "Beginning analysis..."
                 analyzer_comparison, all_probabilities = Analyzer.build_comparison(all_analyzers, melody, mode)
                 high_probs = [prob for prob in all_probabilities if prob > 0.7]
+                print high_probs
 
                 if (max(all_probabilities)) > 0.90 or len(high_probs) > (len(all_probabilities) / 3):
                     print "YAY IT'S A MATCH!"
@@ -184,7 +188,8 @@ class Melody(db.Model):
             # print 'PREDICTION OF NEW MELODY: ', is_major, type(is_major)
             # print 'THE USERS PREFERENCE WAS: ', mode, type(mode)
             # if bool(is_major) == bool(mode):
-
+        elapsed = timeit.default_timer() - start_time
+        print "TIME REQUIRED TO MAKE MELODY: ", elapsed
         return temp_filepath, notes_abc_notation, analyzer_comparison
 
 

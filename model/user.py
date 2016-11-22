@@ -30,7 +30,7 @@ class User(db.Model):
                                                               )
 
     @classmethod
-    def add_user_to_db(cls, email, password, first_name, last_name, profile_img):
+    def add_user_to_db(cls, email, password, first_name, last_name, profile_img=None):
         """Adds new user instance to the db."""
 
         user = User(email=email,
