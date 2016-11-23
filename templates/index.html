@@ -17,13 +17,13 @@
 
 {% block body %}
 
-<div class="la-anim-6">
+<!-- <div class="la-anim-6">
   <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="500" height="500" viewbox="0 0 500 500">
     <path id="la-anim-6-border" transform="translate(250, 250)"/>
     <path id="la-anim-6-loader" transform="translate(250, 250) scale(0.9)"/>
   </svg>
 </div>
-
+ -->
 
 <!-- main container -->
 <div id="full-page">
@@ -551,15 +551,33 @@
     </div>
 </div>
 </div>
-<script src="static/classie.js"></script>
-<script src="static/loading-animation.js"></script>
-<script>
+<!-- <script src="static/classie.js"></script>
+ --><!-- <script src="static/loading-animation.js"></script>
+ -->
+<div id="musical-notes-loader">
+    <center>
+        <img id='note1' src='/static/noun_130928.png'>
+        <img id='note2' src='/static/noun_130928.png'>
+        <img id='note3' src='/static/noun_130928.png'>
+    </center>
+</div>
+
+ <script src="static/notes-loader.js"></script>
+<!--<script>
     $('#melodyForm').on('submit', function(evt) {
         $("#full-page").empty()
+        notesLoop()
+        var timer = 0
+        for (var i=0; i<10; i++){
+            timer = timer + 3000;
+            setTimeout(function (){ 
+                notesLoop();}, timer);
+        }
+
         // evt.preventDefault();
         // data = $('#markov').serialize();
         // window.location.href = '/testing?' + data;
         });
-</script>
+</script>-->
 
  {% endblock %}
