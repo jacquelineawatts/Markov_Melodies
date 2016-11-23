@@ -16,13 +16,14 @@ var notesLoop = function(){
 };
 
 $('#melodyForm').on('submit', function(evt) {
+    evt.preventDefault();
     $("#full-page").empty();
-    // $("#musical-notes-loader").html('<center>LOOK AT ME!</center>');
     notesLoop();
     var timer = 0;
-    for (var i=0; i<5; i++){
+    for (var i=0; i<5; i++) {
         timer = timer + 3000;
-        setTimeout(function (){ 
-            notesLoop();}, timer);
+        setTimeout(function () { 
+            notesLoop();
+        }, timer);
     }
 });

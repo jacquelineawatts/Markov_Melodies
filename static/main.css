@@ -49,16 +49,16 @@ canvas {
 }
 
 #musical-notes-loader img {
-    padding-top: 250px;
-    height: 25px;
+    margin-top: 250px;
+    height: 30px;
 }
 
 #note1 {
-    padding-right: 50px;
+    margin-right: 50px;
 }
 
 #note3 {
-    padding-left: 50px;
+    margin-left: 50px;
 }
 
 /*.login-form {
