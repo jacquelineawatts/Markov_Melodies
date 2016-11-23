@@ -1,7 +1,6 @@
 .navbar {
     position: fixed;
     left: 0;
-    top: 0;
     width: 100%;
 }
 
@@ -19,8 +18,31 @@ canvas {
     height: 400px;
 }
 
-.input-form {
+.cover-page {
+    padding-right: 100px;
+    padding-left: 100px;
+}
+
+.homepage-form {
     margin-top: 450px;
     position: fixed;
     left: 0;
 }
+
+.users-all {
+    padding-top: 75px; 
+    position: static;
+}
+
+.user-profile {
+    padding-top: 75px;
+    position: static;
+}
+
+.results {
+    padding-top: 75px;
+    position: static;
+}
+/*.login-form {
+    position: relative;
+}*/

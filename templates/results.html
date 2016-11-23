@@ -1,44 +1,46 @@
 {% extends 'base.html' %}
-{% block head %}
 {% block title %} Results {% endblock %}
-
+{% block head %}
 {% endblock %}
+
 {% block body %}
+<div class="results">
+    <h3>Resulting Melody: </h3>
+    <audio controls> 
+        <source src='{{ melody_file }}' type='audio/wav'> 
+    </audio><br>
+    {% if 'user_id' in session and session['user_id'] != None %}
+        <h6>Save this melody to your profile: </h6>
+        <form action='/add_melody' method='POST'>
+            <label for='title'>Title: </label><input type='text' name='title'>
+            <input type='submit' value='Submit'>        
+        </form>
+    {% else %}
+        <a href='/login'>Login </a>
+        or
+        <a href='/signup'> Signup </a>
+        to save your melody.
+    {% endif %}
 
-<h3>Resulting Melody: </h3>
-<audio controls> 
-    <source src='{{ melody_file }}' type='audio/wav'> 
-</audio><br>
-{% if 'user_id' in session and session['user_id'] != None %}
-    <h6>Save this melody to your profile: </h6>
-    <form action='/add_melody' method='POST'>
-        <label for='title'>Title: </label><input type='text' name='title'>
-        <input type='submit' value='Submit'>        
-    </form>
-{% else %}
-    <a href='/login'>Login </a>
-    or
-    <a href='/signup'> Signup </a>
-    to save your melody.
-{% endif %}
+    <canvas id="myChart" width="400" height="400"></canvas>
 
-<canvas id="myChart" width="400" height="400"></canvas>
-
-<p>Analysis of Melody: </p>
-{% for analyzer, values in analyzer_comparison.iteritems() %}
-    <p>{{ analyzer }}: <p>
-    <ul>
-    {% for features, probability in values.iteritems() %}
-        {% if features == 'Notes' %}
-        <li>Notes only: {{ probability }}</li>
-        {% elif features == 'Steps' %}
-        <li>Steps only: {{ probability }}</li>
-        {% elif features == 'Both' %}
-        <li>Both notes and steps: {{ probability }}</li>
-        {% endif %}
+    <p>Analysis of Melody: </p>
+    {% for analyzer, values in analyzer_comparison.iteritems() %}
+        <p>{{ analyzer }}: <p>
+        <ul>
+        {% for features, probability in values.iteritems() %}
+            {% if features == 'Notes' %}
+            <li>Notes only: {{ probability }}</li>
+            {% elif features == 'Steps' %}
+            <li>Steps only: {{ probability }}</li>
+            {% elif features == 'Both' %}
+            <li>Both notes and steps: {{ probability }}</li>
+            {% endif %}
+        {% endfor %}
+        </ul>
     {% endfor %}
-    </ul>
-{% endfor %}
+
+</div>
 
 <script>
 var options = { responsive: true,

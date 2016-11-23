@@ -5,7 +5,7 @@
 {% block body %}
 
 {% for user in users %}
-<div>
+<div class="users-all">
     <a href="/user/{{ user.user_id }}"><img class="profile_img" src='{{ user.profile_img }}'></a><br>
     {{ user.first_name }} {{ user.last_name }}<br>
     {% if user in following %}

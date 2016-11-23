@@ -14,19 +14,12 @@
 		width: 3720px;
 }
 */
-h1 {
-	font-size: 40px;
-}
-
-a {text-decoration: none; color: #000; cursor: pointer;}
-a:hover {color: #FFC0CB;}
-
 
 #piano {
     background-color: #272927;
     color: #000000;
-/*    margin-left: 10px;
-    margin-right: 10px;*/
+    margin-left: 10px;
+    margin-right: 10px;
     margin-top: -200px;
     position: absolute;
     text-align: center;
@@ -146,16 +139,16 @@ div.flats :nth-child(5) {
 	cursor: pointer;
 	display: block;
 }
-#toggleKeyNames.on {
+/*#toggleKeyNames.on {
 	color: #ff9000;
 	text-shadow: 1px 1px 0 #7E6D1F;
 }
 #toggleKeyboardKeysNames.on {
 	color: #9C0413;
 	text-shadow: 1px 1px 0 #B31706;
-}
+}*/
 
-.keyname,
+/*.keyname,
 .kbkeyname {
     font-size: 4em;
     margin: 382px 1px 0 0;
@@ -181,21 +174,21 @@ div.flats :nth-child(5) {
 	margin: 233px 0 0 0;
 	color: #9C0413;
 	text-shadow: 1px 1px 0 #B31706;
-}
-
+}*/
+/*
 div.black div.keyname,
 div.black div.kbkeyname {
 	margin-left: 0px;
 }
-
-#Volume {
+*/
+/*#Volume {
 
 }
 
 #switchLight.off {
 	color: #fff;
 }
-
+*/
 #pianoStrings {
 	position: fixed;
 	bottom: 10px;
@@ -214,7 +207,7 @@ div.black div.kbkeyname {
 }
 
 
-footer {
+/*footer {
     top: 650px;
     font-family: Tahoma;
     font-size: 11px;
@@ -238,4 +231,4 @@ footer {
 
 #socialBox h5 {
 	margin-left: 10px;
-}
+}*/
