@@ -5,6 +5,9 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
      <link rel="stylesheet" type="text/css" href="static/piano.css" />
     <link rel="stylesheet" href="/static/main.css">
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu|Ubuntu+Condensed" rel="stylesheet">
+<!--     <link href="https://fonts.googleapis.com/css?family=Sumana" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed|Roboto:500|Sumana" rel="stylesheet"> -->
 <!--    <script src="https://code.jquery.com/jquery.js"></script> -->
     <script src="https://cdn.jsdelivr.net/jquery/1.12.4/jquery.min.js"></script>
        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
@@ -41,17 +44,11 @@
 
 
   <!-- FLASH MESSAGES -->
-  {% with messages = get_flashed_messages() %}
-      {% for message in messages %}
-          <div class="flash-msg">{{ message }}</div>
-      {% endfor %}
-  {% endwith %}
-
 <nav class="navbar navbar-default">
   <div class="container-fluid">
     <div class="navbar-header">
       <a class="navbar-brand navbar-left" href="/melody">
-        <img alt="Melodies" src="/static/noun_559651_cc.png">Markov Melodies
+        <img alt="Melodies" id="logo" src="/static/noun_647981_cc_white.png">Markov Melodies
       </a>
     </div>
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -71,6 +68,11 @@
 </nav>
 
 
+{% with messages = get_flashed_messages() %}
+    {% for message in messages %}
+        <div class="flash-msg">{{ message }}</div>
+    {% endfor %}
+{% endwith %}
 
 <!-- Login Modal -->
 <div class="modal fade" id="loginModal" tabindex="-1" role="dialog" aria-labelledby="loginModalLabel">
@@ -87,11 +89,12 @@
             <input type='submit' name='submit' value='Submit'><br>
 
             <div class="modal-footer">
-                <p>Or login using Facebook: </p>
-                <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
-                </fb:login-button>
+                <p>Or login using Facebook: 
+                  <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+                  </fb:login-button>
+                </p>
                 <div id="status">
-              </div>
+                </div>
             </div>
         </form>
       </div>
@@ -117,9 +120,10 @@
             <input type='submit' name='submit' value='Submit'><br>
 
             <div class="modal-footer">
-                <p>Or sign up using Facebook: </p>
-                <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
-                </fb:login-button>
+                <p>Or sign up using Facebook:
+                  <fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+                  </fb:login-button>
+                </p>
                 <div id="status">
                 </div>
             </div>

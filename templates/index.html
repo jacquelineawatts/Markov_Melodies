@@ -17,13 +17,6 @@
 
 {% block body %}
 
-<!-- <div class="la-anim-6">
-  <svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="500" height="500" viewbox="0 0 500 500">
-    <path id="la-anim-6-border" transform="translate(250, 250)"/>
-    <path id="la-anim-6-loader" transform="translate(250, 250) scale(0.9)"/>
-  </svg>
-</div>
- -->
 
 <!-- main container -->
 <div id="full-page">
@@ -514,7 +507,7 @@
 <div class="container homepage-form">
     <div id="la-buttons" class="column">
         <form id='melodyForm' name='melody' action='/results' method='POST'>
-
+<!-- 
             <label for="note1">First Note: </label>
                 <select name="note1">
                     {% for note in notes %}
@@ -528,32 +521,46 @@
                         <option value="{{ note }}">{{ note }}</option>
                     {% endfor %}
                 </select>
+ -->
+            <div class="row">
+                <div class="col-sm-2 col-sm-offset-2">
+                    <h3>Step 1</h3>
+                    <p>Pick two seed notes above: </p><br>
+                    <div id="notesDisplay"></div>
+                    <div id="notesInput"></div>
+                </div>
 
+                <div class="col-sm-2">
+                    <h3>Step 2</h3>
+                    <p>Pick a Length: </p><br>
+                    <input id="length-input" type="number" name="length">
+                </div>
+                <div class="col-sm-2">
+                    <h3>Step 3</h3>
+                    <p>Pick a Key:</p><br>
+                    <input type="radio" name="mode" value=True><label for="major">Major</label><br>
+                    <input type="radio" name="mode" value=False><label for="minor">Minor</label><br>
+                </div>
+                <div class="col-sm-2">
+                    <h3>Step 4</h3>
+                    <p>Pick a Genre: </p><br>
 
-            <label for="length">Length of Output Melody: </label>
-            <input type="number" name="length">
-            <p>Select if you'd like your melody to be major or minor: </p>
-                <input type="radio" name="mode" value=True><label for="major">Major</label>
-                <input type="radio" name="mode" value=False><label for="minor">Minor</label>
-                <input type="radio" name="mode" value=None><label for="none">No Preference</label>
-            <p>Select a genre: </p>
-            <input type="checkbox" name="genres" value="Classical">
-            <label for="classical">Classical</label>
+                    <input type="checkbox" name="genres" value="Classical">
+                    <label for="classical">Classical</label><br>
+                    <input type="checkbox" name="genres" value="Celtic">
+                    <label for="celtic">Celtic</label><br>
 
-            <input type="checkbox" name="genres" value="Celtic">
-            <label for="celtic">Celtic</label>
-
-            <input type="checkbox" name="genres" value="None">
-            <label for="none">No Preference</label>
-
-            <input type="submit" class="formSubmit" data-anim="la-anim-6" value="Submit">
+                    <input type="checkbox" name="genres" value="None">
+                    <label for="none">No Preference</label>
+                </div>
+                <div class="col-sm-2">
+                    <input type="submit" class="formSubmit" data-anim="la-anim-6" value="Submit">
+                </div>
+            </div>
         </form>
     </div>
 </div>
 </div>
-<!-- <script src="static/classie.js"></script>
- --><!-- <script src="static/loading-animation.js"></script>
- -->
 <div id="musical-notes-loader">
     <center>
         <img id='note1' src='/static/noun_130928.png'>
@@ -562,22 +569,36 @@
     </center>
 </div>
 
- <script src="static/notes-loader.js"></script>
-<!--<script>
-    $('#melodyForm').on('submit', function(evt) {
-        $("#full-page").empty()
-        notesLoop()
-        var timer = 0
-        for (var i=0; i<10; i++){
-            timer = timer + 3000;
-            setTimeout(function (){ 
-                notesLoop();}, timer);
+<script>
+var notesClicked = []
+
+$(document).ready(function() {
+    $(".key").click(function(event) {
+        if (notesClicked.length < 2) {
+            console.log('And now here...'); 
+            notesClicked.push(event.target.id);
+
+        } else {
+            notesClicked.splice(0, 1);
+            notesClicked.push(event.target.id);
         }
 
-        // evt.preventDefault();
-        // data = $('#markov').serialize();
-        // window.location.href = '/testing?' + data;
-        });
-</script>-->
+        if (notesClicked.length === 1) {
+            var notesHTML = "<div class='step1'><img src='/static/noun_130928.png'><p>" + notesClicked[0] + "</p></div>";
+        } else {
+            var notesHTML = "<div class='step1'><img src='/static/noun_130928.png'><p>" + notesClicked[0] + "</p></div><div class='step1'><img src='/static/noun_130928.png'><p>" + notesClicked[1] + "</p></div>";
+        }
+       $("#notesDisplay").html(notesHTML);
+       $("#notesInput").html('<input type="hidden" name="note1" value=' + notesClicked[0] + '><input type="hidden" name="note2" value=' + notesClicked[1] + '>');
+       var firstNoteID = '"' + '#' + notesClicked[0] + '"';
+       var secondNoteID = '"' + '#' + notesClicked[1] + '"';
+       console.log(firstNoteID);
+       $(firstNoteID).css('background-color','#dbdbdb');
+
+    });
+});
+</script>
+
+<script src="static/notes-loader.js"></script>
 
  {% endblock %}

@@ -1,12 +1,81 @@
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Ubuntu Condensed', sans-serif;
+    font-weight: bold;
+}
+
+p {
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 0.75em;
+}
+
 .navbar {
     position: fixed;
     left: 0;
     width: 100%;
 }
 
-.navbar-brand > img {
+.navbar-default .navbar-brand {
+    color: #cccccc;
+    font-family: 'Ubuntu Condensed', sans-serif;
+}
+
+.navbar-default .navbar-nav>li>a {
+    color: #cccccc;
+    font-family: 'Ubuntu Condensed', sans-serif;
+}
+
+.navbar-default .navbar-nav>li>a:hover {
+    color: #888888;
+}
+
+.navbar-default .navbar-brand:hover {
+    color: #888888;
+}
+
+.container-fluid {
+    background-color: #272927;
+    margin-top: -1px;
+    margin-left: -1px;
+    margin-right: -1px;
+}
+
+#logo {
     display: inline;
-    max-height: 25px
+    max-height: 25px;
+    height: 30px;
+    vertical-align: bottom;
+    margin-right: 5px;
+    margin-left: 10px;
+}
+
+.followButton, .guestButton, .loginButton, .signupButton, input[type=submit] {
+    background-color: #ffffff;
+    padding: 7px 7px 7px 7px;
+    margin-bottom: 20px;
+    border-radius: 7px;
+    border: #272927 solid 2px;
+    color: #272927;
+    font-family: 'Ubuntu Condensed', sans-serif;
+}
+
+.followButton:hover, .guestButton:hover, .loginButton:hover, .signupButton:hover, input[type=submit]:hover {
+    background-color: #272927;
+    border: #272927 solid 2px;
+    color: #cccccc;
+    font-family: 'Ubuntu Condensed', sans-serif;
+    text-decoration: none;
+}
+
+input {
+    margin: 5px 2px 5px 2px;
+}
+
+label {
+    font-family: 'Ubuntu Condensed', sans-serif;    
+}
+
+#length-input {
+    width: 50px;
 }
 
 .profile_img {
@@ -18,11 +87,11 @@ canvas {
     height: 400px;
 }
 
-.cover-page {
+/*.cover-page {
     padding-right: 100px;
     padding-left: 100px;
 }
-
+*/
 .homepage-form {
     margin-top: 450px;
     position: fixed;
@@ -36,6 +105,7 @@ canvas {
 
 .user-profile {
     padding-top: 75px;
+    padding-left: 10px;
     position: static;
 }
 
@@ -60,6 +130,21 @@ canvas {
 #note3 {
     margin-left: 50px;
 }
+
+.user-info p {
+    margin-top: 10px;
+}
+
+.melody-wav {
+    padding-top: 0
+}
+
+.step1 {
+    float: left;
+    height: 50px;
+    width: 40px;
+}
+
 
 /*.login-form {
     position: relative;

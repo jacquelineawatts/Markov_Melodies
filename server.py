@@ -67,19 +67,22 @@ def make_melody():
 def show_results():
     """Shows results of a generated melody."""
 
-    note1 = 'D4'
-    note2 = 'G4'
-    input_notes = (note1, note2)
-    length = 24
-    mode = True
-    genres = ['Classical']
-
-    # note1 = request.form.get('note1').encode('latin-1')
-    # note2 = request.form.get('note2').encode('latin-1')
+    # FOR TESTING PURPOSES:
+    # note1 = 'D4'
+    # note2 = 'G4'
     # input_notes = (note1, note2)
-    # length = int(request.form.get('length'))
-    # mode = bool(request.form.get('mode'))
-    # genres = [genre.encode('latin-1') for genre in request.form.getlist('genres')]
+    # length = 24
+    # mode = True
+    # genres = ['Classical']
+
+    note1 = Note.convert_from_input(request.form.get('note1').encode('latin-1'))
+    print note1
+    note2 = Note.convert_from_input(request.form.get('note2').encode('latin-1'))
+    print note2
+    input_notes = (note1, note2)
+    length = int(request.form.get('length'))
+    mode = bool(request.form.get('mode'))
+    genres = [genre.encode('latin-1') for genre in request.form.getlist('genres')]
     temp_filepath, notes_abc_notation, analyzer_comparison = Melody.make_melody(length, input_notes, genres, mode)
 
 

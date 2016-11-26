@@ -3,61 +3,68 @@
 {% block title %} Profile {% endblock %}
 
 {% block body %}
+
 <div class="user-profile">
-    <div>
-        <img class="profile_img" src='/{{ user.profile_img }}'>
-        <p>{{ user.first_name }} {{ user.last_name }}</p>
-        <p>{{ user.email }}</p>
-    </div>
-
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4 user-info">
+                <img class="profile_img" src='/{{ user.profile_img }}'>
+                <h4>{{ user.first_name }} {{ user.last_name }}</h4>
+                <p>{{ user.email }}</p>
+            </div>
 <!--######################## DISPLAYING MELODIES ########################### -->
-    <div>
-    {% if is_current_user %}
-        <p>My melodies: </p>
-    {% else %}
-        <p>{{ user.first_name }}'s melodies: </p>
-    {% endif %}
-
-    {% if melodies %}
-        {% for melody in melodies %}
-            {{ melody.title }}<br>
-            <audio controls> 
-                <source src='/{{ melody.path_to_file }}' type='audio/wav'>
-            </audio><br>
-            {% if (not is_current_user) and (melody in likes) %}
-                <a href="/unlike/{{ melody.melody_id }}">Unlike this melody</a>           
-            {% elif not is_current_user %}
-                <a href="/add_like/{{ melody.melody_id }}">Like this melody</a>
-            {% endif %}<br>
-        {% endfor %}
-    {% else %}
-        {% if is_current_user %}
-            <p>You haven't saved any melodies yet. Please visit the <a href='/'>homepage</a> to create a new melody.</p>
-        {% else %}
-            <p>{{ user.first_name }} has no melodies at this time.</p>
-        {% endif %}
-    {% endif %}
-    </div>
-
-<!--###################### DISPLAYING FOLLOWERS ####################### -->
-    <div>
-        {% if is_current_user %}
-            <p>Who I'm Following: </p>
-            {% for user_id, values in following.iteritems() %}
-                <p>{{ values[0].first_name }} {{ values[0].last_name }}</p>
-                {% if values[1] %}
-                    <p> Listen to their most recent melody: </p>
-                    <p> {{ values[1].title }} </p>
-                    <audio controls> 
-                        <source src='/{{ values[1].path_to_file }}' type='audio/wav'>
-                    </audio><br>
-                    <p><a href="/user/{{ user_id }}">See all melodies</a></p>
+            <div class="col-sm-6 user-melodies">
+                {% if is_current_user %}
+                    <h4>My melodies: </h4>
                 {% else %}
-                    <p>This user doesn't have any melodies yet.</p> 
+                    <h4>{{ user.first_name }}'s melodies: </h4>
                 {% endif %}
-            {% endfor %}
-        {% endif %}
-    </div> 
+
+                {% if melodies %}
+                    {% for melody in melodies %}
+                        <h6>{{ melody.title }}</h6>
+                        <audio controls class="melody-wav"> 
+                            <source src='/{{ melody.path_to_file }}' type='audio/wav'>
+                        </audio>
+                        {% if (not is_current_user) and (melody in likes) %}
+                            <p><a href="/unlike/{{ melody.melody_id }}">Unlike this melody</a></p>           
+                        {% elif not is_current_user %}
+                            <p><a href="/add_like/{{ melody.melody_id }}">Like this melody</a></p>
+                        {% endif %}
+                        <br>
+                    {% endfor %}
+                {% else %}
+                    {% if is_current_user %}
+                        <p>You haven't saved any melodies yet. Please visit the <a href='/'>homepage</a> to create a new melody.</p>
+                    {% else %}
+                        <p>{{ user.first_name }} has no melodies at this time.</p>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+
+<!--###################### DISPLAYING FOLLOWING ####################### -->
+        <div class="row">
+            <div class="col-sm-offset-4 col-sm-6 following-users">
+                {% if is_current_user %}
+                    <h4>Who I'm Following: </h4>
+                    {% for user_id, values in following.iteritems() %}
+                        <h6>{{ values[0].first_name }} {{ values[0].last_name }}</h6>
+                        {% if values[1] %}
+                            <p> Listen to their most recent melody: </p>
+                            <p> {{ values[1].title }} </p>
+                            <audio controls> 
+                                <source src='/{{ values[1].path_to_file }}' type='audio/wav'>
+                            </audio><br>
+                            <p><a href="/user/{{ user_id }}">See all melodies</a></p>
+                        {% else %}
+                            <p>This user doesn't have any melodies yet.</p> 
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div> 
+    </div>
 </div>
 
 {% endblock %}

@@ -81,6 +81,21 @@ class Note(db.Model):
 
         return list(sorted(notes))
 
+    @staticmethod
+    def convert_from_input(input_note):
+        """Convert from keyboard input format to db format.
+
+        Takes input from html5 library as format: 2As (second octave, A sharp)
+        And outputs appropriate format for db and music21: A#2. """
+
+        octave = input_note[0]
+        pitch = input_note[1:]
+
+        if pitch[-1] == "s":
+            return pitch[:-1] + "#" + octave
+        else:
+            return pitch + octave
+
 
 class Duration(db.Model):
     """Class for duration. """
