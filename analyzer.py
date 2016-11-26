@@ -116,16 +116,16 @@ class Analyzer(object):
 
 
 # THIS SHOULD EVENTUALLY BY PART OF DB. FOR NOW SEED DATA UPLOADED EACH TIME APP STARTS.
-lr_notes = Analyzer('Logistic Regression', 'static/pipeline_lr_notes.txt', 'Notes')
-lr_steps = Analyzer('Logistic Regression', 'static/pipeline_lr_steps.txt', 'Steps')
-lr_both = Analyzer('Logistic Regression', 'static/pipeline_lr_both.txt', 'Both')
+lr_notes = Analyzer('Logistic Regression', 'pipelines/pipeline_lr_notes.txt', 'Notes')
+lr_steps = Analyzer('Logistic Regression', 'pipelines/pipeline_lr_steps.txt', 'Steps')
+lr_both = Analyzer('Logistic Regression', 'pipelines/pipeline_lr_both.txt', 'Both')
 
-nb_notes = Analyzer('Naive Bayes', 'static/pipeline_nbm_notes.txt', 'Notes')
-nb_steps = Analyzer('Naive Bayes', 'static/pipeline_nbm_steps.txt', 'Steps')
-nb_both = Analyzer('Naive Bayes', 'static/pipeline_nbm_both.txt', 'Both')
+nb_notes = Analyzer('Naive Bayes', 'pipelines/pipeline_nbm_notes.txt', 'Notes')
+nb_steps = Analyzer('Naive Bayes', 'pipelines/pipeline_nbm_steps.txt', 'Steps')
+nb_both = Analyzer('Naive Bayes', 'pipelines/pipeline_nbm_both.txt', 'Both')
 
-svc_notes = Analyzer('Support Vector Classification', 'static/pipeline_svc_notes.txt', 'Notes')
-svc_steps = Analyzer('Support Vector Classification', 'static/pipeline_svc_steps.txt', 'Steps')
-svc_both = Analyzer('Support Vector Classification', 'static/pipeline_svc_both.txt', 'Both')
+svc_notes = Analyzer('Support Vector Classification', 'pipelines/pipeline_svc_notes.txt', 'Notes')
+svc_steps = Analyzer('Support Vector Classification', 'pipelines/pipeline_svc_steps.txt', 'Steps')
+svc_both = Analyzer('Support Vector Classification', 'pipelines/pipeline_svc_both.txt', 'Both')
 all_analyzers = [lr_notes, lr_steps, lr_both, nb_notes, nb_steps, nb_both, svc_notes, svc_steps, svc_both]
 # all_analyzers = [lr_notes, lr_steps, lr_both]
