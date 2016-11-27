@@ -131,6 +131,41 @@ class Melody(db.Model):
         return generated_melody
 
     @classmethod
+    def convert_for_print(cls, notes_abc_notation):
+        """Converts notes from abc notation to Array notation for VexFlow. """
+
+        notes_array = []
+
+        print notes_abc_notation
+        for note_tuple in notes_abc_notation:
+            note = note_tuple[0].encode('latin-1')
+            pitch, octave = note[:-1], note[-1]
+            pitch_octave = pitch + '/' + octave
+            if int(octave) >= 4:
+                clef = 'treble'
+            else:
+                clef = 'bass'
+
+            duration = int(note_tuple[1])
+            # Poor edge case handling in the VexFlow library, this is a fix
+            # until I find a better library.
+            if duration not in [1, 2, 4, 8, 16]:
+                if duration > 16:
+                    duration = "16"
+                elif duration == 5:
+                    duration = '4'
+                elif duration == 12:
+                    duration = '8'
+            else:
+                duration = str(duration)
+
+            note_for_print = [clef, pitch_octave, duration]
+            print note_for_print
+            notes_array.append(note_for_print)
+
+        return notes_array
+
+    @classmethod
     def save_melody_to_wav_file(cls, melody, filepath):
         """Takes list of note objects and outputs wav file to the server."""
 

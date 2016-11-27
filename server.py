@@ -67,14 +67,6 @@ def make_melody():
 def show_results():
     """Shows results of a generated melody."""
 
-    # FOR TESTING PURPOSES:
-    # note1 = 'D4'
-    # note2 = 'G4'
-    # input_notes = (note1, note2)
-    # length = 24
-    # mode = True
-    # genres = ['Classical']
-
     note1 = Note.convert_from_input(request.form.get('note1').encode('latin-1'))
     print note1
     note2 = Note.convert_from_input(request.form.get('note2').encode('latin-1'))
@@ -84,8 +76,6 @@ def show_results():
     mode = bool(request.form.get('mode'))
     genres = [genre.encode('latin-1') for genre in request.form.getlist('genres')]
     temp_filepath, notes_abc_notation, analyzer_comparison = Melody.make_melody(length, input_notes, genres, mode)
-
-
 
     if temp_filepath is None:
         flash("I'm sorry, there's no melody for that combination of seed notes. Please start over.")
@@ -98,7 +88,9 @@ def show_results():
                                      'wav_filepath': temp_filepath,
                                      'genres': genres}
 
-        return render_template('results.html', melody_file=temp_filepath, analyzer_comparison=analyzer_comparison)
+        notes_array = Melody.convert_for_print(notes_abc_notation)
+
+        return render_template('results.html', melody_file=temp_filepath, analyzer_comparison=analyzer_comparison, notesArray=notes_array)
 
 
 @app.route('/analyzer_data.json')
@@ -171,21 +163,21 @@ def show_user_profile(user_id):
     is_current_user = (user.user_id == current_user)
     likes = Like.check_for_likes(melodies, current_user)
 
-    following = {}
-    for user in user.following:
-        last_melody_id = user.find_last_melody()
+    user_following = {}
+    for following in user.following:
+        last_melody_id = following.find_last_melody()
         if last_melody_id:
             last_melody = Melody.query.get(last_melody_id)
         else:
             last_melody = None
-        following[user.user_id] = [user, last_melody]
+        user_following[following.user_id] = [following, last_melody]
 
     return render_template('user.html',
                            user=user,
                            melodies=melodies,
                            is_current_user=is_current_user,
                            likes=likes,
-                           following=following,
+                           following=user_following,
                            )
 
 # ------------------------ FOLLOWING/UNFOLLOWING A USER ------------------------
