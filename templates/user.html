@@ -7,15 +7,17 @@
 <div class="user-profile">
     <div class="container">
         <div class="row">
-            <div class="col-sm-4 user-info">
+            <div class="col-sm-offset-1 col-sm-3 user-info">
                 <img class="profile_img" src='/{{ user.profile_img }}'>
+                <center>
                 <h4>{{ user.first_name }} {{ user.last_name }}</h4>
                 <p>{{ user.email }}</p>
+                </center>
             </div>
 <!--######################## DISPLAYING MELODIES ########################### -->
             <div class="col-sm-6 user-melodies">
                 {% if is_current_user %}
-                    <h4>My melodies: </h4>
+                    <h4>My Melodies({{ user.melodies|length }}): </h4>
                 {% else %}
                     <h4>{{ user.first_name }}'s melodies: </h4>
                 {% endif %}
@@ -52,8 +54,9 @@
                         <h6>{{ values[0].first_name }} {{ values[0].last_name }}</h6>
                         {% if values[1] %}
                             <p> Listen to their most recent melody: </p>
-                            <p> {{ values[1].title }} </p>
+                            <h6> {{ values[1].title }} </h6>
                             <audio controls> 
+
                                 <source src='/{{ values[1].path_to_file }}' type='audio/wav'>
                             </audio><br>
                             <p><a href="/user/{{ user_id }}">See all melodies</a></p>

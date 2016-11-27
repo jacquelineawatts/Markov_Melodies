@@ -9,9 +9,10 @@
         <div class="row">
             {% for user in users %}
                 {% if user.profile_img %}
-                <div class="col-sm-3">
+                <div class="col-sm-3 profileThumbnail">
                     <a href="/user/{{ user.user_id }}"><img class="profile_img" src='{{ user.profile_img }}'></a><br>
-                    <h6>{{ user.first_name }} {{ user.last_name }}</h6><br>
+                    <h6>{{ user.first_name }} {{ user.last_name }}</h6>
+                    <p>Has {{ user.melodies|length }} melodies </p><br>
                     {% if user in following %}
                         <a class="followButton" href='/unfollow/{{ user.user_id }}'>Unfollow this user</a>
                     {% else %}

@@ -48,6 +48,14 @@ p {
     margin-left: 10px;
 }
 
+.coverPage {
+    margin-top: 50px;
+}
+
+.coverPage p {
+    font-size: 1.25em;
+}
+
 .followButton, .guestButton, .loginButton, .signupButton, input[type=submit] {
     background-color: #ffffff;
     padding: 7px 7px 7px 7px;
@@ -61,7 +69,7 @@ p {
 .followButton:hover, .guestButton:hover, .loginButton:hover, .signupButton:hover, input[type=submit]:hover {
     background-color: #272927;
     border: #272927 solid 2px;
-    color: #cccccc;
+    color: #ffffff;
     font-family: 'Ubuntu Condensed', sans-serif;
     text-decoration: none;
 }
@@ -80,9 +88,15 @@ label {
 
 .profile_img {
     max-width: 150px;
+    margin-top: 10px;
+    border-radius: 10px;
 }
 
-canvas {
+.profileThumbnail {
+    margin-bottom: 25px;
+}
+
+#myChart {
     width: 400px;
     height: 400px;
 }
