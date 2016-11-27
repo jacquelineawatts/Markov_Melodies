@@ -154,8 +154,10 @@ class Melody(db.Model):
                     duration = "16"
                 elif duration == 5:
                     duration = '4'
-                elif duration == 12:
+                elif duration == 12 or duration == 10:
                     duration = '8'
+                else:
+                    duration = '4'
             else:
                 duration = str(duration)
 

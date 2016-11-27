@@ -106,6 +106,7 @@ def construct_chart_data():
                                          ],
                                 "backgroundColor": ['#ff9900', '#ff9900', '#ff9900'],
                                 "hoverBackgroundColor": ['#ffd699', '#ffd699', '#ffd699'],
+                                "label": "Notes Only",
                                 },
                                {"data": [analyzer_comparison['Logistic Regression']['Steps'],
                                          analyzer_comparison['Naive Bayes']['Steps'],
@@ -113,12 +114,14 @@ def construct_chart_data():
                                          ],
                                 "backgroundColor": ['#0066ff', '#0066ff', '#0066ff'],
                                 "hoverBackgroundColor": ['#99c2ff', '#99c2ff', '#99c2ff'],
+                                "label": "Steps Only",
                                 },
                                {"data": [analyzer_comparison['Logistic Regression']['Both'],
                                          analyzer_comparison['Naive Bayes']['Both'],
                                          analyzer_comparison['Support Vector Classification']['Both']],
                                 "backgroundColor": ['#339966', '#339966', '#339966'],
                                 "hoverBackgroundColor": ['#9fdfbf', '#9fdfbf', '#9fdfbf'],
+                                "label": "Both Notes + Steps",
                                 }
                                ]
                   }

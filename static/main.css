@@ -141,6 +141,10 @@ label {
     margin-right: 50px;
 }
 
+#note2 {
+    margin-bottom: 50px;
+}
+
 #note3 {
     margin-left: 50px;
 }
@@ -159,7 +163,13 @@ label {
     width: 40px;
 }
 
+.audio {
+    margin-top: 50px;
+}
 
+canvas {
+    margin-bottom: 100px;
+}
 /*.login-form {
     position: relative;
 }*/

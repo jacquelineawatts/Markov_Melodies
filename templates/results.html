@@ -8,18 +8,13 @@
 
 {% block body %}
 <div class="container results">
-    <div class="row">
-        <div class="col-sm-6">
-            <h3>Resulting Melody: </h3>
-            <div id="sheetMusic"></div>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-sm-6">
+    <div class="row audio">
+        <div class="col-sm-4">
             <audio controls> 
                 <source src='{{ melody_file }}' type='audio/wav'> 
             </audio>
+        </div>
+        <div class="col-sm-6">
             {% if 'user_id' in session and session['user_id'] != None %}
                 <h6>Save this melody to your profile: </h6>
                 <form action='/add_melody' method='POST'>
@@ -34,9 +29,14 @@
             {% endif %}
         </div>
     </div>
-    
     <div class="row">
-        <div class="col-sm-8">
+        <div class="col-sm-10">
+            <div id="sheetMusic"></div>
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-sm-10">
             <canvas id="myChart"></canvas>
         </div>
     </div>
@@ -58,7 +58,7 @@
     {% endfor %} -->
 
 </div>
-
+<!-- ######################### CHART JS #########################-->
 <script>
 var options = { responsive: true,
                 scales: {
@@ -66,10 +66,29 @@ var options = { responsive: true,
                         ticks: {
                             min: 0.50,
                             max: 1.0,
-                            stepSize: 0.1
+                            stepSize: 0.1,
+                            fontColor: '#000000',
+                            fontFamily: 'Ubuntu Condensed',
+                            fontSize: 16,
                         }
-                    }]
-                } };
+                    }],
+                    xAxes: [{
+                        ticks: {
+                            fontColor: '#000000',
+                            fontFamily: 'Ubuntu Condensed',
+                        }
+                    }],
+                }, 
+                legend: {
+                    display: true,
+                    position: 'right',
+                    labels: {
+                        boxWidth: 20,
+                        fontColor: '#000000',
+                        fontFamily: 'Ubuntu Condensed',
+                    }
+                }
+            };
 
 var ctx = document.getElementById("myChart");
 console.log(ctx);
@@ -85,6 +104,8 @@ $.get('/analyzer_data.json', function(data) {
 
 </script>
 
+<!-- ######################### VEXFLOW JS #######################-->
+
 <script type="text/javascript">
 
 VF = Vex.Flow;
@@ -92,14 +113,12 @@ VF = Vex.Flow;
 var div = document.getElementById("sheetMusic")
 var renderer = new VF.Renderer(div, VF.Renderer.Backends.SVG);
 
-renderer.resize(500, 250);
+renderer.resize(1000, 150);
 var context = renderer.getContext();
 context.setFont("Arial", 10, "").setBackgroundFillStyle("#eed");
 
-var stave = new VF.Stave(10, 40, 400);
+var stave = new VF.Stave(10, 40, 600);
 stave.addClef("treble");
-stave.addClef("bass");
-
 
 
 var notes =[]
@@ -117,7 +136,7 @@ addNotes({{ notesArray|safe }})
 console.log(beats);
 var voice = new VF.Voice({num_beats: beats * 4, beat_value: 4});
 voice.addTickables(notes);
-var formatter = new VF.Formatter().joinVoices([voice]).format([voice], 400);
+var formatter = new VF.Formatter().joinVoices([voice]).formatToStave([voice], stave);
 
 stave.setContext(context).draw();
 voice.draw(context, stave);
