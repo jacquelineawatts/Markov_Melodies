@@ -8,12 +8,23 @@
 
 {% block body %}
 <div class="container results">
+    <h1>Resulting Melody</h1>
+    <br>
     <div class="row audio">
-        <div class="col-sm-4">
+        <div class="col-sm-6">
             <audio controls> 
                 <source src='{{ melody_file }}' type='audio/wav'> 
             </audio>
         </div>
+    </div>
+
+    <div class="row">
+        <div class="col-sm-10">
+            <div id="sheetMusic"></div>
+        </div>
+    </div>
+    
+    <div class="row">
         <div class="col-sm-6">
             {% if 'user_id' in session and session['user_id'] != None %}
                 <h6>Save this melody to your profile: </h6>
@@ -27,11 +38,6 @@
                 <a href='/signup'> Signup </a>
                 to save your melody.
             {% endif %}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-sm-10">
-            <div id="sheetMusic"></div>
         </div>
     </div>
     <br>
@@ -61,6 +67,13 @@
 <!-- ######################### CHART JS #########################-->
 <script>
 var options = { responsive: true,
+                title: {
+                    display: true,
+                    text: 'Probability of a Match',
+                    fontColor: '#000000',
+                    fontSize: 16,
+                    fontFamily: 'Ubuntu Condensed',
+                },
                 scales: {
                     yAxes: [{
                         ticks: {
@@ -127,6 +140,11 @@ function addNotes(notesArray) {
     console.log(notesArray);
     for (i = 0; i < notesArray.length; i++) {
         var note = new VF.StaveNote({clef: notesArray[i][0], keys: [notesArray[i][1]], duration: notesArray[i][2]});
+        if (notesArray[i][1][1] === '#') {
+            note = note.addAccidental(0, new VF.Accidental('#'));
+        } else if (notesArray[i][1][1] === 'b') {
+            note = note.addAccidental(0, new VF.Accidental('b'));
+        }
         notes.push(note);
         beats += (1/ notesArray[i][2]);
     }

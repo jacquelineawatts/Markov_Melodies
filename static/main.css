@@ -7,7 +7,7 @@ h1 {
 h2 {
     font-family: 'Ubuntu Condensed', sans-serif;
     font-weight: bold;
-    font-size: 20px;
+    font-size: 40px;
 }
 
 h3, h4, h5, h6 {
@@ -24,6 +24,9 @@ p {
     position: fixed;
     left: 0;
     width: 100%;
+    z-index: 999;
+    background-color: #272927;
+    border: none;
 }
 
 .navbar-default .navbar-brand {
@@ -139,8 +142,10 @@ label {
     position: static;
 }
 
-#followingMelodies {
-    padding-left: 30px
+#sheetMusic {
+    margin-top: -10px;
+    margin-bottom: 20px;
+    z-index: -1;
 }
 
 .results {
@@ -161,10 +166,6 @@ label {
     margin-right: 50px;
 }
 
-#note2 {
-    margin-bottom: 50px;
-}
-
 #note3 {
     margin-left: 50px;
 }
@@ -183,8 +184,11 @@ label {
     width: 40px;
 }
 
-.audio {
-    margin-top: 50px;
+audio {
+/*    margin-top: 50px;*/
+    width: 500px;
+    height: 50px;
+    z-index: 100;
 }
 
 canvas {
@@ -193,3 +197,5 @@ canvas {
 /*.login-form {
     position: relative;
 }*/
+
+
