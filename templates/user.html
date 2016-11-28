@@ -44,6 +44,7 @@
                 {% endif %}
             </div>
         </div>
+        <br>
 
 <!--###################### DISPLAYING FOLLOWING ####################### -->
         <div class="row">
@@ -52,17 +53,18 @@
                     <h4>Who I'm Following: </h4>
                     {% for user_id, values in following.iteritems() %}
                         <h6>{{ values[0].first_name }} {{ values[0].last_name }}</h6>
-                        {% if values[1] %}
-                            <p> Listen to their most recent melody: </p>
-                            <h6> {{ values[1].title }} </h6>
-                            <audio controls> 
-
-                                <source src='/{{ values[1].path_to_file }}' type='audio/wav'>
-                            </audio><br>
-                            <p><a href="/user/{{ user_id }}">See all melodies</a></p>
-                        {% else %}
-                            <p>This user doesn't have any melodies yet.</p> 
-                        {% endif %}
+                        <p> Listen to their most recent melody: </p>
+                            <div id="followingMelodies">                            
+                                {% if values[1] %}
+                                <h6> {{ values[1].title }} </h6>
+                                <audio controls> 
+                                    <source src='/{{ values[1].path_to_file }}' type='audio/wav'>
+                                </audio><br>
+                                <p><a href="/user/{{ user_id }}">See all melodies</a></p>
+                                {% else %}
+                                    <p>This user doesn't have any melodies yet.</p>
+                                {% endif %}
+                            </div> 
                     {% endfor %}
                 {% endif %}
             </div>
