@@ -3,13 +3,13 @@
 {% block head %}
 
 
-<link rel="stylesheet" type="text/css" href="static/component.css" />
-<script src="static/modernizr.custom.js"></script>
+<link rel="stylesheet" type="text/css" href="static/css/component.css" />
+<script src="static/js/modernizr.custom.js"></script>
   
   <script src="https://www.google.com/jsapi?key=ABQIAAAAM5WRXPMrqYvX6b4Xb7EZpxSeEWdgYc2hJ2roZCm3pKElCbTU5BSm-LvChjUku9yw6i8tI0Srj_P91w" type="text/javascript"></script>
   <!--<script src="static/jquery.hotkeys.js"></script>-->
   <!--<script src="static/keyObjects.js"></script>-->
-  <script src="static/piano.js"></script>
+  <script src="static/js/piano.js"></script>
 
 
 {% endblock %}
@@ -507,21 +507,7 @@
 <div class="container homepage-form">
     <div id="la-buttons" class="column">
         <form id='melodyForm' name='melody' action='/results' method='POST'>
-<!-- 
-            <label for="note1">First Note: </label>
-                <select name="note1">
-                    {% for note in notes %}
-                        <option value="{{ note }}">{{ note }}</option>
-                    {% endfor %}
-                </select>
 
-            <label for="note2">Second Note: </label>
-                <select name="note2">
-                    {% for note in notes %}
-                        <option value="{{ note }}">{{ note }}</option>
-                    {% endfor %}
-                </select>
- -->
             <div class="row">
                 <div class="col-sm-2 col-sm-offset-2">
                     <h2 class="stepsNumber">1</h2>
@@ -565,12 +551,13 @@
 </div>
 <div id="musical-notes-loader">
     <center>
-        <img id='note1' src='/static/noun_130928.png'>
-        <img id='note2' src='/static/noun_130928.png'>
-        <img id='note3' src='/static/noun_130928.png'>
+        <img id='note1' src='/static/icons/noun_130928.png'>
+        <img id='note2' src='/static/icons/noun_130928.png'>
+        <img id='note3' src='/static/icons/noun_130928.png'>
     </center>
 </div>
 
+<!-- Script to handle note selection in HTML5 piano -->
 <script>
 var notesClicked = []
 
@@ -586,9 +573,9 @@ $(document).ready(function() {
         }
 
         if (notesClicked.length === 1) {
-            var notesHTML = "<div class='step1'><img src='/static/noun_130928.png'><p>" + notesClicked[0] + "</p></div>";
+            var notesHTML = "<div class='step1'><img src='/static/icons/noun_130928.png'><p>" + notesClicked[0] + "</p></div>";
         } else {
-            var notesHTML = "<div class='step1'><img src='/static/noun_130928.png'><p>" + notesClicked[0] + "</p></div><div class='step1'><img src='/static/noun_130928.png'><p>" + notesClicked[1] + "</p></div>";
+            var notesHTML = "<div class='step1'><img src='/static/icons/noun_130928.png'><p>" + notesClicked[0] + "</p></div><div class='step1'><img src='/static/icons/noun_130928.png'><p>" + notesClicked[1] + "</p></div>";
         }
        $("#notesDisplay").html(notesHTML);
        $("#notesInput").html('<input type="hidden" name="note1" value=' + notesClicked[0] + '><input type="hidden" name="note2" value=' + notesClicked[1] + '>');
@@ -601,6 +588,7 @@ $(document).ready(function() {
 });
 </script>
 
-<script src="static/notes-loader.js"></script>
+<!--  Importing script for loading animation -->
+<script src="static/js/notes-loader.js"></script>
 
  {% endblock %}

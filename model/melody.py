@@ -9,7 +9,7 @@ from markov import Markov
 from analyzer import Analyzer, all_analyzers
 import cPickle
 import timeit
-from logistic_regression import ItemSelector, predict
+from logic.logistic_regression import ItemSelector, predict
 from sklearn.linear_model import LogisticRegression
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.pipeline import Pipeline, FeatureUnion
@@ -46,7 +46,7 @@ class Melody(db.Model):
         """If user signed in, adds most recently generated melody to the db."""
 
         title_for_filepath = '_'.join(title.split(' '))
-        filepath = 'static/{}_{}.wav'.format(title_for_filepath, user_id)
+        filepath = 'static/melodies/{}_{}.wav'.format(title_for_filepath, user_id)
         ps.make_wav(current_melody['notes'], fn=filepath)
         is_major = bool(current_melody['is_major'])
 

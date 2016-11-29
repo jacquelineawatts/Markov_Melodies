@@ -91,7 +91,7 @@ class Connection(db.Model):
             db.session.commit()
             print "Added new connection object to the db."
             following = User.query.get(following_user_id)
-            flash("You're now following {} {}".format(following.first_name, following.last_name))
+            # flash("You're now following {} {}".format(following.first_name, following.last_name))
 
     @classmethod
     def delete_connection(cls, follower_user_id, following_user_id):

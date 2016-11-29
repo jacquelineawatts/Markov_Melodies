@@ -8,28 +8,16 @@ from model.melody import Melody, MelodyNote
 from model.note import Note, Duration
 from model.markov import Markov, Outcome
 from model.genre import Genre, MelodyGenre
-from logistic_regression import ItemSelector, predict
-# from image_handler import UploadAPI
-
-# ----- FOR TESTING IMG UPLOADER ------
-from flask.views import MethodView
-import json
-import os
-import os.path
-import shutil
-# ------- END TESTING ------
-
-# ------ FOR TESTING REDIRECT ANIMATION STUFF ------
-import time
-# ---------- END TESTING
+from model.analyzer import Analyzer
+from logic.logistic_regression import ItemSelector, predict
 
 
 app = Flask(__name__)
 app.secret_key = "%ri*.\xab\x12\x81\x9b\x14\x1b\xd3\x86\xcaK\x8b\x87\t\x8c\xaf\x9d\x14\x87\x8a"
 app.jinja_env.undefined = StrictUndefined
-BASE_DIRECTORY = os.path.dirname(__file__)
-STATIC_DIRECTORY = os.path.join(BASE_DIRECTORY, 'static')
-UPLOAD_DIRECTORY = os.path.join(STATIC_DIRECTORY, 'images')
+# BASE_DIRECTORY = os.path.dirname(__file__)
+# STATIC_DIRECTORY = os.path.join(BASE_DIRECTORY, 'static')
+# UPLOAD_DIRECTORY = os.path.join(STATIC_DIRECTORY, 'images')
 
 
 # ------------------------------ COVER + HOMEPAGE ------------------------------
@@ -45,21 +33,9 @@ def make_melody():
     """Shows homepage. """
 
     notes = Note.get_all_notes()
-    # notes = ['A-4', 'A4', 'A#4', 'B-4', 'B4', 'C4', 'C#4', 'D-4', 'D4', 'D#4',
-    #          'E-4', 'E4', 'F4', 'F#4', 'G-4', 'G4', 'G#4']
 
     return render_template('index.html', notes=notes)
 
-
-# @app.route('/fb_tester')
-# def test_fb_login():
-
-#     return render_template('fb_tester.html')
-
-# @app.route('/testing')
-# def test():
-#     time.sleep(5)
-#     return str(request.args)
 
 # ------------------------------ RESULTS PAGE ----------------------------------
 
@@ -98,33 +74,7 @@ def construct_chart_data():
     """Constructs data for ChartJS viz of ML classifier outcomes on results page."""
 
     analyzer_comparison = session['analyzer_data']
-
-    chart_data = {"labels": ["Linear Regression", "Multinomial NB", "Support Vector Classification"],
-                  "datasets": [{"data": [analyzer_comparison['Logistic Regression']['Notes'],
-                                         analyzer_comparison['Naive Bayes']['Notes'],
-                                         analyzer_comparison['Support Vector Classification']['Notes'],
-                                         ],
-                                "backgroundColor": ['#ff9900', '#ff9900', '#ff9900'],
-                                "hoverBackgroundColor": ['#ffd699', '#ffd699', '#ffd699'],
-                                "label": "Notes Only",
-                                },
-                               {"data": [analyzer_comparison['Logistic Regression']['Steps'],
-                                         analyzer_comparison['Naive Bayes']['Steps'],
-                                         analyzer_comparison['Support Vector Classification']['Steps'],
-                                         ],
-                                "backgroundColor": ['#0066ff', '#0066ff', '#0066ff'],
-                                "hoverBackgroundColor": ['#99c2ff', '#99c2ff', '#99c2ff'],
-                                "label": "Steps Only",
-                                },
-                               {"data": [analyzer_comparison['Logistic Regression']['Both'],
-                                         analyzer_comparison['Naive Bayes']['Both'],
-                                         analyzer_comparison['Support Vector Classification']['Both']],
-                                "backgroundColor": ['#339966', '#339966', '#339966'],
-                                "hoverBackgroundColor": ['#9fdfbf', '#9fdfbf', '#9fdfbf'],
-                                "label": "Both Notes + Steps",
-                                }
-                               ]
-                  }
+    chart_data = Analyzer.build_chart_data(analyzer_comparison)
 
     return jsonify(chart_data)
 
@@ -194,7 +144,7 @@ def add_connection(user_id):
 
     Connection.add_connection_to_db(follower_user_id, following_user_id)
 
-    return redirect('/user/{}'.format(following_user_id))
+    return redirect('/users')
 
 
 @app.route('/unfollow/<user_id>')
@@ -301,8 +251,7 @@ def process_login():
         if user.password == password:
             flash("You've successfully logged in!")
             session['user_id'] = user.user_id
-            # return redirect('/user/{}'.format(user.user_id))
-            return redirect('/melody')
+            return redirect('/user/{}'.format(user.user_id))
         else:
             flash("I'm sorry that password is incorrect. Please try again.")
             return redirect('/login')
@@ -349,7 +298,7 @@ def get_oauth_data():
         user = user_query.first()
 
     if user:
-        # WHY ISNT THIS SETTING THE USER ID VAR??, it prints!
+        # STILL ISSUES SETTING THE USER ID VAR IN SESSION...
         session['user_id'] = user.user_id
         print "USER ID: ", session['user_id']
 
@@ -374,7 +323,7 @@ if __name__ == "__main__":
 
     app.debug = True
     connect_to_db(app)
-    DebugToolbarExtension(app)
+    # DebugToolbarExtension(app)
     app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
     app.run(host='0.0.0.0')
