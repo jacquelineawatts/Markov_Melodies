@@ -144,6 +144,7 @@ class Analyzer(object):
                                     }
                                    ]
                       }
+
         return chart_data
 
 

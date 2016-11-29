@@ -15,9 +15,6 @@ from logic.logistic_regression import ItemSelector, predict
 app = Flask(__name__)
 app.secret_key = "%ri*.\xab\x12\x81\x9b\x14\x1b\xd3\x86\xcaK\x8b\x87\t\x8c\xaf\x9d\x14\x87\x8a"
 app.jinja_env.undefined = StrictUndefined
-# BASE_DIRECTORY = os.path.dirname(__file__)
-# STATIC_DIRECTORY = os.path.join(BASE_DIRECTORY, 'static')
-# UPLOAD_DIRECTORY = os.path.join(STATIC_DIRECTORY, 'images')
 
 
 # ------------------------------ COVER + HOMEPAGE ------------------------------
