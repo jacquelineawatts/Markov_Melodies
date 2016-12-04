@@ -3,11 +3,7 @@
 <h6>Overview: </h6>
 Markov Melodies is an exploration into algorithmic musical composition. Given a small amount of user input, the application generates melodies via second-order Markov chains. Generated melody outcomes are then compared to user preferences for major and minor keys using classification machine learning techniques to find a suitable match. Users can share their melodies on their profile, follow other users, and like other users' melodies.
 
-<div class="video_container">
-  <video controls="controls" allowfullscreen="true" poster="path/to/poster_image.png" width="600px">
-    <source src="Demo_screencast.mp4" type="video/mp4">
-  </video> 
-</div>
+<img src="Demo_screencast.gif" width="600px"/ >
 
 <h6>APIs:</h6>
 <ul><li><strong><a href="https://developers.facebook.com/docs/facebook-login/web">Facebook OAuth:</a></strong> Enabling users to sign in via Facebook authentication.</li></ul>
