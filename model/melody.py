@@ -190,6 +190,7 @@ class Melody(db.Model):
 
         # Saves newly generated tuple of tuples to wav file in static folder
         ps.make_wav(notes_abc, fn=filepath)
+
         return notes_abc
 
     @classmethod
@@ -218,8 +219,11 @@ class Melody(db.Model):
                     print "YAY IT'S A MATCH!"
 
                     temp_filepath = 'static/temp.wav'
-                    notes_abc_notation = Melody.save_melody_to_wav_file(melody, temp_filepath)
-                    break
+                    try:
+                        notes_abc_notation = Melody.save_melody_to_wav_file(melody, temp_filepath)
+                        break
+                    except ValueError:
+                        continue
 
             # is_major = Analyzer.predict_mode(melody)
             # print 'PREDICTION OF NEW MELODY: ', is_major, type(is_major)
