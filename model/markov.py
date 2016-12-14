@@ -3,7 +3,8 @@ from sqlalchemy.orm.exc import NoResultFound, MultipleResultsFound
 from note import Note
 import numpy as np
 from genre import Genre
-from note import Note, Duration
+from note import Note
+from duration import Duration
 
 
 class Markov(db.Model):
