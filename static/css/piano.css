@@ -18,19 +18,22 @@
 #piano {
     background-color: #272927;
     color: #000000;
+    margin: auto;
     margin-top: -200px;
     position: absolute;
     text-align: center;
+    left: -9999px;
+    right: -9999px;
     top: 250px;
-		width: 3705px;
-		padding: 0px 10px 13px;
+	width: 3610px;
+	padding: 0px 10px 13px;
 }
 
 #pianoBody {
     height: 50%;
 	/*width: 100%;*/
 	position: relative;
-	float: left;
+	/*float: left;*/
 }
 
 #littleRedLine {
